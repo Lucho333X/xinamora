@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xina Mora</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #000000;
+      color: #D1D5DB;
+      font-family: 'Arial', sans-serif;
+    }
+    .countdown {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    .social-icon {
+      width: 24px;
+      height: 24px;
+    }
+    .hero-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+    @media (max-width: 640px) {
+      .countdown {
+        font-size: 1.5rem;
+      }
+      .social-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <!-- Hero Image -->
+  <section class="w-full">
+    <img src="./hero.jpg" alt="Xina Mora Hero Image" class="hero-image" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+    <div style="display:none; text-align:center; padding:20px; background-color:#1a1a1a;">No se pudo cargar la imagen. Asegúrate de que 'hero.jpg' esté en la carpeta correcta.</div>
+  </section>
+
+  <!-- Countdown Timer -->
+  <section id="countdown-section" class="flex-grow flex items-center justify-center py-16">
+    <div id="countdown" class="countdown text-center"></div>
+  </section>
+
+  <!-- Waitlist Form -->
+  <section class="py-16 text-center">
+    <h2 class="text-2xl font-bold mb-4">LISTA DE ESPERA</h2>
+    <p class="mb-8">ÚNETE A LA LISTA DE ESPERA PARA RECIBIR LA SEÑAL</p>
+    <form id="waitlist-form" class="max-w-md mx-auto space-y-4">
+      <input type="text" name="nombre" placeholder="Nombre" required class="w-full p-2 bg-black border border-gray-600 text-gray-300 rounded focus:outline-none focus:border-gray-400">
+      <input type="text" name="apellido" placeholder="Apellido" required class="w-full p-2 bg-black border border-gray-600 text-gray-300 rounded focus:outline-none focus:border-gray-400">
+      <input type="email" name="correo" placeholder="Correo" required class="w-full p-2 bg-black border border-gray-600 text-gray-300 rounded focus:outline-none focus:border-gray-400">
+      <button type="submit" class="w-full p-2 bg-gray-300 text-black font-bold rounded hover:bg-gray-400">ÚNETE</button>
+    </form>
+  </section>
+
+  <!-- Social Media Links -->
+  <section class="flex justify-center space-x-6 py-8">
+    <a href="https://instagram.com/yourusername" target="_blank">
+      <img src="ig-button.png" alt="Instagram" class="social-icon hover:opacity-80">
+    </a>
+    <a href="https://tiktok.com/@yourusername" target="_blank">
+      <img src="tiktok-button.png" alt="TikTok" class="social-icon hover:opacity-80">
+    </a>
+    <a href="https://open.spotify.com/artist/yourartistid" target="_blank">
+      <img src="spotify-button.png" alt="Spotify" class="social-icon hover:opacity-80">
+    </a>
+    <a href="https://youtube.com/@yourchannel" target="_blank">
+      <img src="youtube-button.png" alt="YouTube" class="social-icon hover:opacity-80">
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-8 text-sm">
+    © 2025 XINA MORA. All rights reserved.
+  </footer>
+
+  <!-- Countdown Script -->
+  <script>
+    // Set the target date: 44 days, 4 hours, 44 minutes, 4 seconds from now
+    const targetDate = new Date();
+    targetDate.setTime(targetDate.getTime() + (44 * 24 * 60 * 60 * 1000) + (4 * 60 * 60 * 1000) + (44 * 60 * 1000) + (4 * 1000));
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        document.getElementById('countdown-section').style.display = 'none';
+        clearInterval(countdownInterval);
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('countdown').innerHTML = 
+        `${days.toString().padStart(2, '0')}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+    }
+
+    // Initial update
+    updateCountdown();
+    // Update every second
+    const countdownInterval = setInterval(updateCountdown, 1000);
+
+    // Form Submission (for future Mailchimp integration)
+    document.getElementById('waitlist-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Gracias por unirte a la lista de espera!');
+      this.reset();
+    });
+  </script>
+</body>
+</html>
