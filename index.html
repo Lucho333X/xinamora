@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xina Mora</title>
   <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="icon" type="image/png" href="./favicon.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180">
   <link rel="manifest" href="/site.webmanifest">
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Flodesk Header Code -->
@@ -64,7 +64,6 @@
       position: relative;
       width: 100%;
     }
-    /* Fade-in animation for scroll */
     .fade-in {
       opacity: 0;
       transform: translateY(20px);
@@ -74,7 +73,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-    /* Blur effect for sections */
     .blurable {
       filter: blur(3px);
       opacity: 0.7;
@@ -84,7 +82,6 @@
       filter: blur(0);
       opacity: 1;
     }
-    /* Style Flodesk form */
     #fd-form-6829c459d64fa2c01ea9e205 input[type="text"],
     #fd-form-6829c459d64fa2c01ea9e205 input[type="email"] {
       background-color: #000000;
@@ -125,9 +122,11 @@
 <body class="min-h-screen flex flex-col">
   <!-- Hero Image with Pixelation Effect -->
   <section class="w-full hero-container">
-    <img src="hero.jpg" alt="Xina Mora Hero Image" class="hero-image" id="hero-image" onerror="this.style.display='none';this.nextElementSibling.nextElementSibling.style.display='block';console.error('Failed to load hero.jpg. Ensure the file is in the same folder as index.html and named correctly.');">
+    <img src="./hero.jpg" alt="Xina Mora Hero Image" class="hero-image" id="hero-image" onerror="this.style.display='none';this.nextElementSibling.nextElementSibling.style.display='block';console.error('Failed to load hero.jpg. Ensure the file is in the root directory and named exactly hero.jpg');">
     <canvas id="hero-canvas" class="hero-canvas"></canvas>
-    <div style="display:none; text-align:center; padding:20px; background-color:#1a1a1a;">No se pudo cargar la imagen. Asegúrate de que 'hero.jpg' esté en la misma carpeta que index.html y que el nombre sea exacto (incluyendo mayúsculas/minúsculas y extensión .jpg).</div>
+    <div style="display:none; text-align:center; padding:20px; background-color:#1a1a1a;">
+      No se pudo cargar la imagen. Asegúrate de que 'hero.jpg' esté en la carpeta raíz del repositorio y que el nombre sea exacto (incluyendo mayúsculas/minúsculas y extensión .jpg).
+    </div>
   </section>
 
   <!-- Countdown Timer -->
@@ -138,7 +137,6 @@
   <!-- Waitlist Form (Flodesk) -->
   <section class="py-16 text-center fade-in blurable">
     <div class="max-w-md mx-auto">
-      <!-- Flodesk Inline Code -->
       <div id="fd-form-6829c459d64fa2c01ea9e205"></div>
       <script>
         window.fd('form', {
@@ -152,16 +150,16 @@
   <!-- Social Media Links -->
   <section class="flex justify-center space-x-6 py-8 fade-in blurable">
     <a href="https://www.instagram.com/laxinamora/?hl=es" target="_blank">
-      <img src="ig-button.png" alt="Instagram" class="social-icon hover:opacity-80">
+      <img src="./ig-button.png" alt="Instagram" class="social-icon hover:opacity-80" onerror="console.error('Failed to load ig-button.png. Ensure the file is in the root directory and named exactly ig-button.png');">
     </a>
     <a href="https://www.tiktok.com/@laxinamora?lang=es" target="_blank">
-      <img src="tiktok-button.png" alt="TikTok" class="social-icon hover:opacity-80">
+      <img src="./tiktok-button.png" alt="TikTok" class="social-icon hover:opacity-80" onerror="console.error('Failed to load tiktok-button.png. Ensure the file is in the root directory and named exactly tiktok-button.png');">
     </a>
     <a href="https://open.spotify.com/intl-es/artist/4dRPdWRUFyJp0yhjGBLClx" target="_blank">
-      <img src="spotify-button.png" alt="Spotify" class="social-icon hover:opacity-80">
+      <img src="./spotify-button.png" alt="Spotify" class="social-icon hover:opacity-80" onerror="console.error('Failed to load spotify-button.png. Ensure the file is in the root directory and named exactly spotify-button.png');">
     </a>
     <a href="https://www.youtube.com/c/xinamora" target="_blank">
-      <img src="youtube-button.png" alt="YouTube" class="social-icon hover:opacity-80">
+      <img src="./youtube-button.png" alt="YouTube" class="social-icon hover:opacity-80" onerror="console.error('Failed to load youtube-button.png. Ensure the file is in the root directory and named exactly youtube-button.png');">
     </a>
   </section>
 
@@ -172,9 +170,19 @@
 
   <!-- Scripts -->
   <script>
-    // Countdown Script
-    const targetDate = new Date();
-    targetDate.setTime(targetDate.getTime() + (44 * 24 * 60 * 60 * 1000) + (4 * 60 * 60 * 1000) + (44 * 60 * 1000) + (4 * 1000));
+    // Countdown Script with Persistent Target Date
+    const TARGET_DATE_KEY = 'countdownTargetDate';
+    let targetDate;
+
+    // Check if target date exists in localStorage
+    const storedTargetDate = localStorage.getItem(TARGET_DATE_KEY);
+    if (storedTargetDate) {
+      targetDate = new Date(storedTargetDate);
+    } else {
+      // Set target date to one month from now (June 18, 2025, 03:55 PM WEST)
+      targetDate = new Date('2025-06-18T15:55:00+01:00');
+      localStorage.setItem(TARGET_DATE_KEY, targetDate.toISOString());
+    }
 
     function updateCountdown() {
       const now = new Date();
@@ -229,7 +237,7 @@
       const rect = heroImage.getBoundingClientRect();
       heroCanvas.width = rect.width;
       heroCanvas.height = rect.height;
-      ctx.imageSmoothingEnabled = false; // Disable smoothing for pixelated effect
+      ctx.imageSmoothingEnabled = false;
       ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
     }
 
@@ -242,14 +250,12 @@
       return true;
     }
 
-    // Initialize canvas after image loads
     heroImage.addEventListener('load', () => {
       if (initializeCanvas()) {
         heroCanvas.style.pointerEvents = 'auto';
       }
     });
 
-    // Check if image is already loaded (e.g., cached)
     if (heroImage.complete && heroImage.naturalWidth !== 0) {
       if (initializeCanvas()) {
         heroCanvas.style.pointerEvents = 'auto';
@@ -263,26 +269,20 @@
     window.addEventListener('resize', resizeCanvas);
 
     function pixelate(x, y, pixelSize = 20) {
-      // Adjust pixel size based on canvas dimensions for responsiveness
       const scaleFactor = Math.min(heroCanvas.width, heroCanvas.height) / 1000;
       const adjustedPixelSize = Math.max(10, pixelSize * scaleFactor);
 
-      // Ensure pixelation stays within canvas bounds
       if (x < adjustedPixelSize / 2 || y < adjustedPixelSize / 2 || 
           x > heroCanvas.width - adjustedPixelSize / 2 || y > heroCanvas.height - adjustedPixelSize / 2) {
         return;
       }
 
       try {
-        // Redraw the original image
         ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
-
-        // Get pixel data around the mouse
         const imgData = ctx.getImageData(x - adjustedPixelSize / 2, y - adjustedPixelSize / 2, adjustedPixelSize, adjustedPixelSize);
         const data = imgData.data;
         let r = 0, g = 0, b = 0, a = 0, count = 0;
 
-        // Calculate average color
         for (let i = 0; i < data.length; i += 4) {
           r += data[i];
           g += data[i + 1];
@@ -298,7 +298,6 @@
         b = Math.floor(b / count);
         a = Math.floor(a / count);
 
-        // Apply pixelated effect
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
         ctx.fillRect(x - adjustedPixelSize / 2, y - adjustedPixelSize / 2, adjustedPixelSize, adjustedPixelSize);
       } catch (e) {
