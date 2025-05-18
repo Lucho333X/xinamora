@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xina Mora</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+  <link rel="manifest" href="/site.webmanifest">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Flodesk Header Code -->
+  <script>
+    (function(w, d, t, h, s, n) {
+      w.FlodeskObject = n;
+      var fn = function() {
+        (w[n].q = w[n].q || []).push(arguments);
+      };
+      w[n] = w[n] || fn;
+      var f = d.getElementsByTagName(t)[0];
+      var v = '?v=' + Math.floor(new Date().getTime() / (120 * 1000)) * 60;
+      var sm = d.createElement(t);
+      sm.async = true;
+      sm.type = 'module';
+      sm.src = h + s + '.mjs' + v;
+      f.parentNode.insertBefore(sm, f);
+      var sn = d.createElement(t);
+      sn.async = true;
+      sn.noModule = true;
+      sn.src = h + s + '.js' + v;
+      f.parentNode.insertBefore(sn, f);
+    })(window, document, 'script', 'https://assets.flodesk.com', '/universal', 'fd');
+  </script>
+  <style>
+    body {
+      background-color: #000000;
+      color: #D1D5DB;
+      font-family: 'Arial', sans-serif;
+    }
+    .countdown {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    .social-icon {
+      width: 24px;
+      height: 24px;
+    }
+    .hero-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-canvas {
+      width: 100%;
+      height: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+    }
+    .hero-container {
+      position: relative;
+      width: 100%;
+    }
+    /* Fade-in animation for scroll */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Blur effect for sections */
+    .blurable {
+      filter: blur(3px);
+      opacity: 0.7;
+      transition: filter 0.4s ease, opacity 0.4s ease;
+    }
+    .blurable.clear {
+      filter: blur(0);
+      opacity: 1;
+    }
+    /* Style Flodesk form */
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="text"],
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="email"] {
+      background-color: #000000;
+      border: 1px solid #4B5563;
+      color: #D1D5DB;
+      border-radius: 0.25rem;
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="text"]::placeholder,
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="email"]::placeholder {
+      color: #9CA3AF;
+    }
+    #fd-form-6829c459d64fa2c01ea9e205 button[type="submit"] {
+      background-color: #D1D5DB;
+      color: #000000;
+      font-weight: bold;
+      border-radius: 0.25rem;
+      padding: 0.5rem 1rem;
+      width: 100%;
+      cursor: pointer;
+    }
+    #fd-form-6829c459d64fa2c01ea9e205 button[type="submit"]:hover {
+      background-color: #9CA3AF;
+    }
+    @media (max-width: 640px) {
+      .countdown {
+        font-size: 1.5rem;
+      }
+      .social-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <!-- Hero Image with Pixelation Effect -->
+  <section class="w-full hero-container">
+    <img src="hero.jpg" alt="Xina Mora Hero Image" class="hero-image" id="hero-image" onerror="this.style.display='none';this.nextElementSibling.nextElementSibling.style.display='block';console.error('Failed to load hero.jpg. Ensure the file is in the same folder as index.html and named correctly.');">
+    <canvas id="hero-canvas" class="hero-canvas"></canvas>
+    <div style="display:none; text-align:center; padding:20px; background-color:#1a1a1a;">No se pudo cargar la imagen. Asegúrate de que 'hero.jpg' esté en la misma carpeta que index.html y que el nombre sea exacto (incluyendo mayúsculas/minúsculas y extensión .jpg).</div>
+  </section>
+
+  <!-- Countdown Timer -->
+  <section id="countdown-section" class="flex-grow flex items-center justify-center py-16 fade-in blurable">
+    <div id="countdown" class="countdown text-center"></div>
+  </section>
+
+  <!-- Waitlist Form (Flodesk) -->
+  <section class="py-16 text-center fade-in blurable">
+    <div class="max-w-md mx-auto">
+      <!-- Flodesk Inline Code -->
+      <div id="fd-form-6829c459d64fa2c01ea9e205"></div>
+      <script>
+        window.fd('form', {
+          formId: '6829c459d64fa2c01ea9e205',
+          containerEl: '#fd-form-6829c459d64fa2c01ea9e205'
+        });
+      </script>
+    </div>
+  </section>
+
+  <!-- Social Media Links -->
+  <section class="flex justify-center space-x-6 py-8 fade-in blurable">
+    <a href="https://www.instagram.com/laxinamora/?hl=es" target="_blank">
+      <img src="ig-button.png" alt="Instagram" class="social-icon hover:opacity-80">
+    </a>
+    <a href="https://www.tiktok.com/@laxinamora?lang=es" target="_blank">
+      <img src="tiktok-button.png" alt="TikTok" class="social-icon hover:opacity-80">
+    </a>
+    <a href="https://open.spotify.com/intl-es/artist/4dRPdWRUFyJp0yhjGBLClx" target="_blank">
+      <img src="spotify-button.png" alt="Spotify" class="social-icon hover:opacity-80">
+    </a>
+    <a href="https://www.youtube.com/c/xinamora" target="_blank">
+      <img src="youtube-button.png" alt="YouTube" class="social-icon hover:opacity-80">
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-8 text-sm fade-in blurable">
+    © 2025 XINA MORA. All rights reserved.
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Countdown Script
+    const targetDate = new Date();
+    targetDate.setTime(targetDate.getTime() + (44 * 24 * 60 * 60 * 1000) + (4 * 60 * 60 * 1000) + (44 * 60 * 1000) + (4 * 1000));
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        document.getElementById('countdown-section').style.display = 'none';
+        clearInterval(countdownInterval);
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('countdown').innerHTML = 
+        `${days.toString().padStart(2, '0')}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+    }
+
+    updateCountdown();
+    const countdownInterval = setInterval(updateCountdown, 1000);
+
+    // Scroll Animation Script
+    function handleScroll() {
+      const elements = document.querySelectorAll('.fade-in');
+      elements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        if (rect.top <= windowHeight * 0.8) {
+          element.classList.add('visible');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('load', handleScroll);
+
+    // Persistent Blur-to-Clear Effect
+    document.querySelectorAll('.blurable').forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        element.classList.add('clear');
+      });
+    });
+
+    // Pixelation Effect for Hero Image
+    const heroImage = document.getElementById('hero-image');
+    const heroCanvas = document.getElementById('hero-canvas');
+    const ctx = heroCanvas.getContext('2d', { willReadFrequently: true });
+
+    function resizeCanvas() {
+      const rect = heroImage.getBoundingClientRect();
+      heroCanvas.width = rect.width;
+      heroCanvas.height = rect.height;
+      ctx.imageSmoothingEnabled = false; // Disable smoothing for pixelated effect
+      ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
+    }
+
+    function initializeCanvas() {
+      if (!heroImage.complete || heroImage.naturalWidth === 0) {
+        console.error('Hero image not loaded or invalid. Pixelation effect disabled.');
+        return false;
+      }
+      resizeCanvas();
+      return true;
+    }
+
+    // Initialize canvas after image loads
+    heroImage.addEventListener('load', () => {
+      if (initializeCanvas()) {
+        heroCanvas.style.pointerEvents = 'auto';
+      }
+    });
+
+    // Check if image is already loaded (e.g., cached)
+    if (heroImage.complete && heroImage.naturalWidth !== 0) {
+      if (initializeCanvas()) {
+        heroCanvas.style.pointerEvents = 'auto';
+      }
+    }
+
+    heroImage.addEventListener('error', () => {
+      console.error('Hero image failed to load. Pixelation effect disabled.');
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+
+    function pixelate(x, y, pixelSize = 20) {
+      // Adjust pixel size based on canvas dimensions for responsiveness
+      const scaleFactor = Math.min(heroCanvas.width, heroCanvas.height) / 1000;
+      const adjustedPixelSize = Math.max(10, pixelSize * scaleFactor);
+
+      // Ensure pixelation stays within canvas bounds
+      if (x < adjustedPixelSize / 2 || y < adjustedPixelSize / 2 || 
+          x > heroCanvas.width - adjustedPixelSize / 2 || y > heroCanvas.height - adjustedPixelSize / 2) {
+        return;
+      }
+
+      try {
+        // Redraw the original image
+        ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
+
+        // Get pixel data around the mouse
+        const imgData = ctx.getImageData(x - adjustedPixelSize / 2, y - adjustedPixelSize / 2, adjustedPixelSize, adjustedPixelSize);
+        const data = imgData.data;
+        let r = 0, g = 0, b = 0, a = 0, count = 0;
+
+        // Calculate average color
+        for (let i = 0; i < data.length; i += 4) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          a += data[i + 3];
+          count++;
+        }
+
+        if (count === 0) return;
+
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+        a = Math.floor(a / count);
+
+        // Apply pixelated effect
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+        ctx.fillRect(x - adjustedPixelSize / 2, y - adjustedPixelSize / 2, adjustedPixelSize, adjustedPixelSize);
+      } catch (e) {
+        console.error('Pixelation error:', e);
+      }
+    }
+
+    heroCanvas.addEventListener('mouseenter', () => {
+      heroImage.style.display = 'none';
+      heroCanvas.style.display = 'block';
+      ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
+    });
+
+    heroCanvas.addEventListener('mousemove', (e) => {
+      const rect = heroCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      pixelate(x, y);
+    });
+
+    heroCanvas.addEventListener('mouseleave', () => {
+      heroImage.style.display = 'block';
+      heroCanvas.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
