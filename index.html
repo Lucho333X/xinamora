@@ -56,13 +56,13 @@
       opacity: 1;
       transform: translateY(0);
     }
-    /* Blur-to-clear hover effect for Flodesk form */
-    .form-container {
+    /* Blur effect for sections */
+    .blurable {
       filter: blur(3px);
       opacity: 0.7;
       transition: filter 0.4s ease, opacity 0.4s ease;
     }
-    .form-container:hover {
+    .blurable.clear {
       filter: blur(0);
       opacity: 1;
     }
@@ -112,13 +112,13 @@
   </section>
 
   <!-- Countdown Timer -->
-  <section id="countdown-section" class="flex-grow flex items-center justify-center py-16 fade-in">
+  <section id="countdown-section" class="flex-grow flex items-center justify-center py-16 fade-in blurable">
     <div id="countdown" class="countdown text-center"></div>
   </section>
 
   <!-- Waitlist Form (Flodesk) -->
-  <section class="py-16 text-center fade-in">
-    <div class="max-w-md mx-auto form-container">
+  <section class="py-16 text-center fade-in blurable">
+    <div class="max-w-md mx-auto">
       <!-- Flodesk Inline Code -->
       <div id="fd-form-6829c459d64fa2c01ea9e205"></div>
       <script>
@@ -131,7 +131,7 @@
   </section>
 
   <!-- Social Media Links -->
-  <section class="flex justify-center space-x-6 py-8 fade-in">
+  <section class="flex justify-center space-x-6 py-8 fade-in blurable">
     <a href="https://www.instagram.com/laxinamora/?hl=es" target="_blank">
       <img src="ig-button.png" alt="Instagram" class="social-icon hover:opacity-80">
     </a>
@@ -147,7 +147,7 @@
   </section>
 
   <!-- Footer -->
-  <footer class="text-center py-8 text-sm fade-in">
+  <footer class="text-center py-8 text-sm fade-in blurable">
     © 2025 XINA MORA. All rights reserved.
   </footer>
 
@@ -193,6 +193,13 @@
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('load', handleScroll);
+
+    // Persistent Blur-to-Clear Effect
+    document.querySelectorAll('.blurable').forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        element.classList.add('clear');
+      });
+    });
   </script>
 </body>
 </html>
