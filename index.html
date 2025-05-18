@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xina Mora</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Flodesk Header Code -->
+  <script>
+    (function(w, d, t, h, s, n) {
+      w.FlodeskObject = n;
+      var fn = function() {
+        (w[n].q = w[n].q || []).push(arguments);
+      };
+      w[n] = w[n] || fn;
+      var f = d.getElementsByTagName(t)[0];
+      var v = '?v=' + Math.floor(new Date().getTime() / (120 * 1000)) * 60;
+      var sm = d.createElement(t);
+      sm.async = true;
+      sm.type = 'module';
+      sm.src = h + s + '.mjs' + v;
+      f.parentNode.insertBefore(sm, f);
+      var sn = d.createElement(t);
+      sn.async = true;
+      sn.noModule = true;
+      sn.src = h + s + '.js' + v;
+      f.parentNode.insertBefore(sn, f);
+    })(window, document, 'script', 'https://assets.flodesk.com', '/universal', 'fd');
+  </script>
   <style>
     body {
       background-color: #000000;
@@ -23,6 +45,33 @@
       width: 100%;
       height: auto;
       object-fit: cover;
+    }
+    /* Style Flodesk form to match minimalistic design */
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="text"],
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="email"] {
+      background-color: #000000;
+      border: 1px solid #4B5563;
+      color: #D1D5DB;
+      border-radius: 0.25rem;
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="text"]::placeholder,
+    #fd-form-6829c459d64fa2c01ea9e205 input[type="email"]::placeholder {
+      color: #9CA3AF;
+    }
+    #fd-form-6829c459d64fa2c01ea9e205 button[type="submit"] {
+      background-color: #D1D5DB;
+      color: #000000;
+      font-weight: bold;
+      border-radius: 0.25rem;
+      padding: 0.5rem 1rem;
+      width: 100%;
+      cursor: pointer;
+    }
+    #fd-form-6829c459d64fa2c01ea9e205 button[type="submit"]:hover {
+      background-color: #9CA3AF;
     }
     @media (max-width: 640px) {
       .countdown {
@@ -47,16 +96,18 @@
     <div id="countdown" class="countdown text-center"></div>
   </section>
 
-  <!-- Waitlist Form -->
+  <!-- Waitlist Form (Flodesk) -->
   <section class="py-16 text-center">
-    <h2 class="text-2xl font-bold mb-4">LISTA DE ESPERA</h2>
-    <p class="mb-8">ÚNETE A LA LISTA DE ESPERA PARA RECIBIR LA SEÑAL</p>
-    <form id="waitlist-form" class="max-w-md mx-auto space-y-4">
-      <input type="text" name="nombre" placeholder="Nombre" required class="w-full p-2 bg-black border border-gray-600 text-gray-300 rounded focus:outline-none focus:border-gray-400">
-      <input type="text" name="apellido" placeholder="Apellido" required class="w-full p-2 bg-black border border-gray-600 text-gray-300 rounded focus:outline-none focus:border-gray-400">
-      <input type="email" name="correo" placeholder="Correo" required class="w-full p-2 bg-black border border-gray-600 text-gray-300 rounded focus:outline-none focus:border-gray-400">
-      <button type="submit" class="w-full p-2 bg-gray-300 text-black font-bold rounded hover:bg-gray-400">ÚNETE</button>
-    </form>
+    <div class="max-w-md mx-auto">
+      <!-- Flodesk Inline Code -->
+      <div id="fd-form-6829c459d64fa2c01ea9e205"></div>
+      <script>
+        window.fd('form', {
+          formId: '6829c459d64fa2c01ea9e205',
+          containerEl: '#fd-form-6829c459d64fa2c01ea9e205'
+        });
+      </script>
+    </div>
   </section>
 
   <!-- Social Media Links -->
@@ -109,13 +160,6 @@
     updateCountdown();
     // Update every second
     const countdownInterval = setInterval(updateCountdown, 1000);
-
-    // Form Submission (for future Mailchimp integration)
-    document.getElementById('waitlist-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Gracias por unirte a la lista de espera!');
-      this.reset();
-    });
   </script>
 </body>
 </html>
