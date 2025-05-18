@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xina Mora</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+  <link rel="manifest" href="/site.webmanifest">
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Flodesk Header Code -->
   <script>
@@ -45,6 +50,19 @@
       width: 100%;
       height: auto;
       object-fit: cover;
+      display: block;
+    }
+    .hero-canvas {
+      width: 100%;
+      height: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+    }
+    .hero-container {
+      position: relative;
+      width: 100%;
     }
     /* Fade-in animation for scroll */
     .fade-in {
@@ -105,9 +123,10 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
-  <!-- Hero Image -->
-  <section class="w-full">
-    <img src="hero.jpg" alt="Xina Mora Hero Image" class="hero-image" onerror="this.style.display='none';this.nextElementSibling.style.display='block';console.error('Failed to load hero.jpg. Ensure the file is in the same folder as index.html and named correctly.');">
+  <!-- Hero Image with Pixelation Effect -->
+  <section class="w-full hero-container">
+    <img src="hero.jpg" alt="Xina Mora Hero Image" class="hero-image" id="hero-image" onerror="this.style.display='none';this.nextElementSibling.nextElementSibling.style.display='block';console.error('Failed to load hero.jpg. Ensure the file is in the same folder as index.html and named correctly.');">
+    <canvas id="hero-canvas" class="hero-canvas"></canvas>
     <div style="display:none; text-align:center; padding:20px; background-color:#1a1a1a;">No se pudo cargar la imagen. Asegúrate de que 'hero.jpg' esté en la misma carpeta que index.html y que el nombre sea exacto (incluyendo mayúsculas/minúsculas y extensión .jpg).</div>
   </section>
 
@@ -199,6 +218,110 @@
       element.addEventListener('mouseenter', () => {
         element.classList.add('clear');
       });
+    });
+
+    // Pixelation Effect for Hero Image
+    const heroImage = document.getElementById('hero-image');
+    const heroCanvas = document.getElementById('hero-canvas');
+    const ctx = heroCanvas.getContext('2d', { willReadFrequently: true });
+
+    function resizeCanvas() {
+      const rect = heroImage.getBoundingClientRect();
+      heroCanvas.width = rect.width;
+      heroCanvas.height = rect.height;
+      ctx.imageSmoothingEnabled = false; // Disable smoothing for pixelated effect
+      ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
+    }
+
+    function initializeCanvas() {
+      if (!heroImage.complete || heroImage.naturalWidth === 0) {
+        console.error('Hero image not loaded or invalid. Pixelation effect disabled.');
+        return false;
+      }
+      resizeCanvas();
+      return true;
+    }
+
+    // Initialize canvas after image loads
+    heroImage.addEventListener('load', () => {
+      if (initializeCanvas()) {
+        heroCanvas.style.pointerEvents = 'auto';
+      }
+    });
+
+    // Check if image is already loaded (e.g., cached)
+    if (heroImage.complete && heroImage.naturalWidth !== 0) {
+      if (initializeCanvas()) {
+        heroCanvas.style.pointerEvents = 'auto';
+      }
+    }
+
+    heroImage.addEventListener('error', () => {
+      console.error('Hero image failed to load. Pixelation effect disabled.');
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+
+    function pixelate(x, y, pixelSize = 20) {
+      // Adjust pixel size based on canvas dimensions for responsiveness
+      const scaleFactor = Math.min(heroCanvas.width, heroCanvas.height) / 1000;
+      const adjustedPixelSize = Math.max(10, pixelSize * scaleFactor);
+
+      // Ensure pixelation stays within canvas bounds
+      if (x < adjustedPixelSize / 2 || y < adjustedPixelSize / 2 || 
+          x > heroCanvas.width - adjustedPixelSize / 2 || y > heroCanvas.height - adjustedPixelSize / 2) {
+        return;
+      }
+
+      try {
+        // Redraw the original image
+        ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
+
+        // Get pixel data around the mouse
+        const imgData = ctx.getImageData(x - adjustedPixelSize / 2, y - adjustedPixelSize / 2, adjustedPixelSize, adjustedPixelSize);
+        const data = imgData.data;
+        let r = 0, g = 0, b = 0, a = 0, count = 0;
+
+        // Calculate average color
+        for (let i = 0; i < data.length; i += 4) {
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          a += data[i + 3];
+          count++;
+        }
+
+        if (count === 0) return;
+
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+        a = Math.floor(a / count);
+
+        // Apply pixelated effect
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+        ctx.fillRect(x - adjustedPixelSize / 2, y - adjustedPixelSize / 2, adjustedPixelSize, adjustedPixelSize);
+      } catch (e) {
+        console.error('Pixelation error:', e);
+      }
+    }
+
+    heroCanvas.addEventListener('mouseenter', () => {
+      heroImage.style.display = 'none';
+      heroCanvas.style.display = 'block';
+      ctx.drawImage(heroImage, 0, 0, heroCanvas.width, heroCanvas.height);
+    });
+
+    heroCanvas.addEventListener('mousemove', (e) => {
+      const rect = heroCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      pixelate(x, y);
+    });
+
+    heroCanvas.addEventListener('mouseleave', () => {
+      heroImage.style.display = 'block';
+      heroCanvas.style.display = 'none';
     });
   </script>
 </body>
