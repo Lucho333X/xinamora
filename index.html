@@ -136,14 +136,12 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
-  <!-- Hero Image with Pixelation Effect -->
-  <section class="w-full hero-container">
-    <img src="./hero.jpg" alt="Xina Mora Hero Image" class="hero-image" id="hero-image" onerror="this.style.display='none';this.nextElementSibling.nextElementSibling.style.display='block';console.error('Failed to load hero.jpg. Ensure the file is in the root directory and named exactly hero.jpg');">
-    <canvas id="hero-canvas" class="hero-canvas"></canvas>
-    <div style="display:none; text-align:center; padding:20px; background-color:#1a1a1a;">
-      No se pudo cargar la imagen. Asegúrate de que 'hero.jpg' esté en la carpeta raíz del repositorio y que el nombre sea exacto (incluyendo mayúsculas/minúsculas y extensión .jpg).
-    </div>
-  </section>
+  
+ <!-- Hero Image Clean -->
+<section class="w-full hero-container">
+  <img src="./hero.jpg" alt="Xina Mora Hero Image" class="hero-image" id="hero-image">
+  <canvas id="hero-canvas" class="hero-canvas"></canvas>
+</section>
 
   <!-- Countdown Timer -->
   <section id="countdown-section" class="flex-grow flex items-center justify-center py-16 fade-in blurable">
