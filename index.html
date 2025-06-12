@@ -175,20 +175,7 @@
 
   <!-- Scripts -->
   <script>
-    // Countdown Script with Persistent Target Date
-    const TARGET_DATE_KEY = 'countdownTargetDate';
-    let targetDate;
-
-    // Check if target date exists in localStorage
-    const storedTargetDate = localStorage.getItem(TARGET_DATE_KEY);
-    if (storedTargetDate) {
-      targetDate = new Date(storedTargetDate);
-    } else {
-      // Set target date to one month from now (June 28, 2025, 03:55 PM WEST)
-      localStorage.removeItem(TARGET_DATE_KEY); // 👈 Esto solo la primera vez
-      targetDate = new Date('2025-06-28T15:55:00+01:00');
-      localStorage.setItem(TARGET_DATE_KEY, targetDate.toISOString());
-    }
+    const targetDate = new Date('2025-06-28T15:55:00+01:00');
 
     function updateCountdown() {
       const now = new Date();
