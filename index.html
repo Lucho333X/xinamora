@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XINA MORA | LA SEÑAL | MASTER V11</title>
+    <title>XINA MORA | LA SEÑAL | MASTER V12</title>
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +34,22 @@
         body {
             background-color: var(--bg-color); color: var(--text-color);
             font-family: var(--font-head); overflow-x: hidden; text-transform: uppercase;
+        }
+
+        /* --- ROTATE DEVICE OVERLAY (Mobile Only) --- */
+        #rotateOverlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10005;
+            flex-direction: column; justify-content: center; align-items: center;
+            color: var(--accent-color); text-align: center; padding: 20px;
+        }
+        
+        /* Mostrar overlay solo en pantallas pequeñas y orientación vertical */
+        @media (max-width: 900px) and (orientation: portrait) {
+            #rotateOverlay { display: flex; }
+            /* Ocultar el resto del juego mientras se pide rotar para evitar scroll */
+            #gameModal { visibility: hidden; }
         }
 
         /* --- CUSTOM CURSOR --- */
@@ -180,7 +196,7 @@
         }
         .newsletter-input:focus { border-color: var(--accent-color); outline: none; }
 
-        /* GAME UI (UPDATED) */
+        /* GAME UI */
         .game-wrapper {
             position: relative; border: 2px solid var(--accent-color);
             box-shadow: 0 0 50px rgba(255, 51, 51, 0.15);
@@ -236,6 +252,13 @@
 
     <div id="cursor"></div>
     <div class="noise-overlay"></div>
+
+    <!-- ROTATE OVERLAY (Mobile) -->
+    <div id="rotateOverlay">
+        <i class="fas fa-rotate" style="font-size: 4rem; margin-bottom: 20px;"></i>
+        <h2 style="font-size: 1.5rem;">GIRA TU TELÉFONO</h2>
+        <p style="font-family: var(--font-mono); margin-top: 10px;">GIRA LA PANTALLA PARA INICIAR LA MISIÓN.</p>
+    </div>
 
     <!-- CONTROLES -->
     <div class="controls-panel">
@@ -367,7 +390,7 @@
         </div>
     </div>
 
-    <!-- MODAL JUEGO (REDISEÑADO) -->
+    <!-- MODAL JUEGO -->
     <div id="gameModal" class="modal-overlay">
         <div class="game-wrapper">
             <div class="close-modal hover-target" onclick="closeGame()">✕ SALIR</div>
@@ -380,7 +403,8 @@
             
             <div id="scoreHud"></div>
             <div id="livesHud"></div>
-            <div id="mobileControlsHint">IZQUIERDA: MOVER /// DERECHA: DISPARAR</div>
+            <!-- INSTRUCCIONES ACTUALIZADAS -->
+            <div id="mobileControlsHint">IZQUIERDA: MOVER NAVES /// DERECHA: DISPARAR</div>
 
             <div id="uiLayer" class="ui-layer">
                 <!-- Game Over -->
@@ -518,13 +542,13 @@
         });
 
         // ==========================================
-        // === GAME ENGINE V11: ARCADE PRO ===
+        // === GAME ENGINE V12: PERFECT MOBILE ===
         // ==========================================
         const modal = document.getElementById('gameModal');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        let gameLoopId;
+        let gameLoopId = null;
         let gameActive = false;
         let score = 0;
         let shake = 0;
@@ -532,29 +556,32 @@
         
         // Input State
         const keys = {};
-        const touchInput = { active: false, x: 0, y: 0, fire: false };
+        // Reset inputs on start
+        let touchInput = { active: false, y: 250, fire: false };
         let player = { x: 50, y: 250, spd: 5, cd: 0, hp: 3, maxHp: 3 };
 
         // Desktop Inputs
         document.addEventListener('keydown', e => { keys[e.code] = true; if(e.code==='Space'||e.code.startsWith('Arrow')) e.preventDefault(); });
         document.addEventListener('keyup', e => delete keys[e.code]);
         
-        // Mobile Inputs (Enhanced)
+        // --- MOBILE INPUTS (REDESIGNED) ---
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             touchInput.active = true;
             updateTouch(e.touches);
         }, {passive: false});
+        
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
             updateTouch(e.touches);
         }, {passive: false});
+        
         canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
-            // Check if touches remain
+            // Si no quedan dedos, desactivar todo
             if(e.touches.length === 0) {
-                touchInput.fire = false;
                 touchInput.active = false;
+                touchInput.fire = false;
             } else {
                 updateTouch(e.touches);
             }
@@ -562,7 +589,7 @@
 
         function updateTouch(touches) {
             touchInput.fire = false;
-            let moveTouch = null;
+            let leftTouchFound = false;
             
             for(let i=0; i<touches.length; i++) {
                 const t = touches[i];
@@ -570,15 +597,19 @@
                 const tX = (t.clientX - rect.left) * (canvas.width / rect.width);
                 const tY = (t.clientY - rect.top) * (canvas.height / rect.height);
                 
-                // Right side = Fire
+                // Pantalla dividida: >50% es disparar, <50% es mover
                 if(tX > canvas.width / 2) {
                     touchInput.fire = true;
                 } else {
-                    // Left side = Move
-                    moveTouch = tY;
+                    // Mano izquierda controla altura (Y)
+                    touchInput.y = tY;
+                    leftTouchFound = true;
                 }
             }
-            if(moveTouch !== null) touchInput.y = moveTouch;
+            // Si solo estás disparando, no muevas la nave a "0" (arriba del todo)
+            if(!leftTouchFound && touches.length > 0) {
+                // Mantener Y actual si no hay dedo izquierdo
+            }
         }
 
         function openGame() {
@@ -591,7 +622,8 @@
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
             gameActive = false;
-            cancelAnimationFrame(gameLoopId);
+            if(gameLoopId) cancelAnimationFrame(gameLoopId);
+            gameLoopId = null;
             document.getElementById('gameOverScreen').style.display = 'none';
             document.getElementById('scoreHud').style.display = 'none';
             document.getElementById('livesHud').style.display = 'none';
@@ -616,20 +648,29 @@
         }
 
         function startGame() {
-            gameActive = true;
+            // 1. Limpieza total para evitar bugs de reinicio
+            gameActive = false;
+            if(gameLoopId) cancelAnimationFrame(gameLoopId);
+            
+            // 2. Reset de estado
+            touchInput = { active: false, y: 250, fire: false };
             score = 0;
             shake = 0;
             hitFlash = 0;
-            player = { x: 50, y: 250, w: 30, h: 20, spd: 6, cd: 0, hp: 3, maxHp: 3 };
+            player = { x: 50, y: 250, w: 30, h: 20, spd: 8, cd: 0, hp: 3, maxHp: 3 }; // Velocidad aumentada para mejor respuesta táctil
             entities = [];
             particles = [];
             initStars();
             
+            // 3. UI
             document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('uiLayer').style.pointerEvents = 'none';
             document.getElementById('scoreHud').style.display = 'block';
             document.getElementById('livesHud').style.display = 'block';
             
-            gameLoop();
+            // 4. Iniciar Loop
+            gameActive = true;
+            gameLoopId = requestAnimationFrame(gameLoop);
         }
 
         function gameOver() {
@@ -695,13 +736,11 @@
             document.getElementById('livesHud').innerHTML = `INTEGRITY: ${'█'.repeat(player.hp)}<span style="opacity:0.3">${'█'.repeat(player.maxHp - player.hp)}</span>`;
 
             // Player Logic
-            let targetY = player.y;
-            
             if (touchInput.active) {
-                // Mobile: Lerp towards touch Y
-                if (Math.abs(touchInput.y - player.y) > 5) {
-                    if (touchInput.y < player.y) player.y -= player.spd;
-                    else player.y += player.spd;
+                // Mobile: Movimiento fluido hacia el dedo (Lerp)
+                const dy = touchInput.y - player.y;
+                if (Math.abs(dy) > 5) {
+                    player.y += dy * 0.15; // Smooth factor
                 }
             } else {
                 // Desktop
@@ -712,7 +751,7 @@
             // Boundaries
             player.y = Math.max(20, Math.min(canvas.height-20, player.y));
 
-            // Draw Player (Stylish Ship)
+            // Draw Player
             ctx.save();
             ctx.translate(player.x, player.y);
             
@@ -745,7 +784,7 @@
             ctx.lineTo(-15, 10);
             ctx.closePath();
             ctx.stroke();
-            if(hitFlash > 0) ctx.fill(); // Fill red on hit
+            if(hitFlash > 0) ctx.fill();
 
             ctx.restore();
 
@@ -778,7 +817,6 @@
                     if(e.x > canvas.width) entities.splice(i, 1);
                 } 
                 else if(e.type === 'enemy') {
-                    // Draw Enemy (Spinning polygon)
                     e.angle = (e.angle || 0) + 0.1;
                     drawPolygon(ctx, e.x, e.y, e.radius, 4, e.color, e.angle);
 
@@ -795,7 +833,7 @@
                     else if(e.x < -50) entities.splice(i, 1);
                 }
 
-                // Bullet vs Enemy Logic
+                // Bullet vs Enemy
                 if(e.type === 'bullet') {
                     for(let j=0; j<entities.length; j++) {
                         let t = entities[j];
@@ -805,7 +843,7 @@
                             entities.splice(j, 1); // Remove enemy
                             entities.splice(i, 1); // Remove bullet
                             score += 100;
-                            break; // Stop checking
+                            break;
                         }
                     }
                 }
