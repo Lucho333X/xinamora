@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XINA MORA | LA SEÑAL | MASTER V13</title>
+    <title>XINA MORA | LA SEÑAL | MASTER V14</title>
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -193,7 +193,7 @@
         .game-wrapper {
             position: relative; border: 2px solid var(--accent-color);
             box-shadow: 0 0 50px rgba(255, 51, 51, 0.15);
-            max-width: 100%; /* Ajuste para evitar desbordamiento */
+            max-width: 100%;
             width: 800px;
         }
         canvas { display: block; background: #050505; cursor: crosshair; width: 100%; height: auto; }
@@ -216,15 +216,18 @@
             background: var(--accent-color); border-color: var(--accent-color); color: #000; font-weight: bold;
         }
 
+        /* --- HUD (DESKTOP) --- */
         #scoreHud {
             position: absolute; top: 20px; left: 20px; font-family: var(--font-mono);
-            color: white; font-size: 1.2rem; display: none; text-shadow: 0 0 10px rgba(255,0,0,0.8);
+            color: white; font-size: 1.2rem; display: none; text-shadow: 0 0 5px rgba(0,0,0,0.8);
             z-index: 100;
+            background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; /* Background para contraste */
         }
         
         #livesHud {
             position: absolute; bottom: 20px; left: 20px; font-family: var(--font-mono);
             color: var(--accent-color); font-size: 1rem; display: none; z-index: 100;
+            background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px;
         }
         
         #mobileControlsHint {
@@ -239,12 +242,24 @@
             .controls-panel { bottom: 10px; right: 10px; }
             
             /* FIX JUEGO MOVIL: Asegurar que cabe en pantalla con márgenes */
-            .game-wrapper { width: 95vw; max-width: 95vw; margin: 0 auto; box-sizing: border-box; }
+            .game-wrapper { width: 95vw; max-width: 95vw; margin: 0 auto; box-sizing: border-box; border-width: 1px; }
             
             /* FIX NEWSLETTER MOVIL: Más pequeña y manejable */
             .newsletter-box { width: 90%; padding: 25px; margin: 0 auto; }
             
-            #mobileControlsHint { display: block; }
+            #mobileControlsHint { display: block; bottom: 10px; font-size: 0.65rem; }
+
+            /* --- HUD MÓVIL (REDISTRIBUIDO) --- */
+            #scoreHud {
+                top: 10px; left: 10px; font-size: 0.9rem; /* Arriba Izquierda */
+                text-shadow: 1px 1px 2px black;
+                padding: 3px 8px;
+            }
+            #livesHud {
+                bottom: auto; top: 10px; left: auto; right: 10px; /* Arriba Derecha (Lejos de pulgares) */
+                font-size: 0.8rem;
+                padding: 3px 8px;
+            }
         }
     </style>
 </head>
@@ -542,7 +557,7 @@
         });
 
         // ==========================================
-        // === GAME ENGINE V13: MOBILE FLOW FIX ===
+        // === GAME ENGINE V14: VISUAL TWEAKS ===
         // ==========================================
         const modal = document.getElementById('gameModal');
         const canvas = document.getElementById('gameCanvas');
