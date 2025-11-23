@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XINA MORA | LA SEÑAL | MASTER V15</title>
+    <title>XINA MORA | LA SEÑAL | MASTER V17</title>
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,9 +38,9 @@
 
         /* --- ROTATE OVERLAY --- */
         #rotateOverlay {
-            display: none; /* Por defecto oculto */
+            display: none; 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 20000; /* Z-index supremo */
+            background: #000; z-index: 20000; 
             flex-direction: column; justify-content: center; align-items: center;
             color: var(--accent-color); text-align: center; padding: 20px;
         }
@@ -241,12 +241,12 @@
             .nav-links { display: none; }
             .controls-panel { bottom: 10px; right: 10px; }
             
-            /* FIX NEWSLETTER MOVIL: Más pequeña y manejable */
+            /* FIX NEWSLETTER MOVIL: Más pequeña */
             .newsletter-box { width: 90%; padding: 25px; margin: 0 auto; }
             
             #mobileControlsHint { display: block; bottom: 10px; font-size: 0.65rem; }
 
-            /* --- HUD MÓVIL (REDISTRIBUIDO) --- */
+            /* --- HUD MÓVIL --- */
             #scoreHud {
                 top: 10px; left: 10px; font-size: 0.9rem; 
                 text-shadow: 1px 1px 2px black;
@@ -258,8 +258,22 @@
                 padding: 3px 8px;
             }
 
+            /* --- FIX GAME OVER MÓVIL (COMPACTO) --- */
+            #gameOverScreen {
+                width: 85% !important; /* Menos ancho */
+                max-width: 350px;
+                padding: 20px !important; /* Menos relleno */
+            }
+            #gameOverScreen h2 { font-size: 1.5rem; } /* Título más pequeño */
+            #gameOverScreen p { font-size: 0.8rem; margin: 5px 0; }
+            #gameOverScreen .cta-btn { 
+                padding: 10px 20px; font-size: 0.9rem; margin-top: 10px;
+            }
+            #gameOverScreen .newsletter-input {
+                padding: 10px; margin: 10px 0; font-size: 0.9rem;
+            }
+
             /* --- FIX CORTE PANTALLA MÓVIL (FULLSCREEN) --- */
-            /* Cuando el modal del juego está activo en móvil, ocupa el 100% absoluto */
             #gameModal {
                 padding: 0 !important;
                 justify-content: center;
@@ -267,9 +281,9 @@
             
             .game-wrapper { 
                 width: 100vw; 
-                height: 100vh; /* Ocupa todo el alto del viewport */
+                height: 100vh; 
                 max-width: 100%;
-                border: none; /* Sin bordes para maximizar espacio */
+                border: none; 
                 border-radius: 0;
                 display: flex;
                 align-items: center;
@@ -280,7 +294,7 @@
             canvas {
                 width: 100%;
                 height: 100%;
-                object-fit: cover; /* Ajuste para llenar sin deformar */
+                object-fit: cover; 
             }
 
             /* Botón de salir flotante en móvil */
@@ -293,6 +307,15 @@
                 padding: 5px 10px;
                 border: 1px solid #333;
                 z-index: 10003;
+            }
+
+            /* Botón Mute Móvil */
+            .in-game-mute {
+                top: auto !important; 
+                bottom: 30px !important; 
+                right: 20px !important; 
+                background: rgba(0,0,0,0.7);
+                z-index: 10004;
             }
         }
     </style>
@@ -593,7 +616,7 @@
         });
 
         // ==========================================
-        // === GAME ENGINE V15: FULLSCREEN IMMERSION ===
+        // === GAME ENGINE V17: POLISHED ===
         // ==========================================
         const modal = document.getElementById('gameModal');
         const canvas = document.getElementById('gameCanvas');
@@ -665,27 +688,22 @@
         }
 
         // --- FULLSCREEN & RESIZE LOGIC ---
-        
-        // Función para intentar poner fullscreen real (oculta barra dirección)
         function tryGoFullscreen() {
             const elem = document.documentElement;
             if (elem.requestFullscreen) {
                 elem.requestFullscreen().catch(err => console.log(err));
-            } else if (elem.webkitRequestFullscreen) { /* Safari */
+            } else if (elem.webkitRequestFullscreen) { 
                 elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
+            } else if (elem.msRequestFullscreen) {
                 elem.msRequestFullscreen();
             }
         }
 
-        // Función para redimensionar el canvas exactamente al viewport
         function resizeCanvasForMobile() {
             if (window.innerWidth < 900) {
-                // En móvil, el canvas ocupa toda la pantalla real
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
             } else {
-                // En desktop, tamaño fijo arcade
                 canvas.width = 800;
                 canvas.height = 500;
             }
@@ -693,7 +711,6 @@
 
         function checkGameOrientation() {
             if (gameRequested) {
-                // Detectar si estamos en móvil y portrait
                 if (window.innerWidth < 900 && window.innerHeight > window.innerWidth) {
                     rotateOverlay.style.display = 'flex'; 
                     modal.style.display = 'none'; 
@@ -702,14 +719,12 @@
                         if(gameLoopId) cancelAnimationFrame(gameLoopId);
                     }
                 } else {
-                    // Horizontal (o Desktop) -> JUEGO ACTIVO
                     rotateOverlay.style.display = 'none'; 
                     modal.style.display = 'flex'; 
                     
-                    // Intenta Fullscreen si es móvil
                     if (window.innerWidth < 900) {
                         tryGoFullscreen();
-                        resizeCanvasForMobile(); // Ajustar resolución
+                        resizeCanvasForMobile(); 
                     }
 
                     if (!gameActive) {
@@ -727,6 +742,9 @@
         });
 
         function openGame() {
+            if(audioCtx.state === 'suspended') {
+                audioCtx.resume().then(() => console.log("Audio Resumed on Button Click"));
+            }
             gameRequested = true; 
             document.body.style.overflow = 'hidden';
             checkGameOrientation(); 
@@ -738,7 +756,6 @@
             rotateOverlay.style.display = 'none';
             document.body.style.overflow = 'auto';
             
-            // Salir de Fullscreen
             if (document.exitFullscreen) {
                 document.exitFullscreen().catch(e => {});
             } else if (document.webkitExitFullscreen) {
@@ -757,9 +774,12 @@
         let entities = [];
         let particles = [];
         let stars = [];
+        let bgTexts = []; // New BG Text System
+        const bgStrings = ["XINA MORA", "111", "222", "333", "444", "555", "RE: NACER"];
 
         function initStars() {
             stars = [];
+            bgTexts = [];
             for(let i=0; i<100; i++) {
                 stars.push({
                     x: Math.random() * canvas.width,
@@ -769,13 +789,25 @@
                     alpha: Math.random()
                 });
             }
+            // Init one text
+            spawnBgText();
+        }
+
+        function spawnBgText() {
+            bgTexts.push({
+                x: canvas.width + 100,
+                y: Math.random() * (canvas.height - 100) + 50,
+                text: bgStrings[Math.floor(Math.random() * bgStrings.length)],
+                spd: 2,
+                size: Math.random() * 40 + 40 // Big Text
+            });
         }
 
         function startGame() {
             gameActive = false;
             if(gameLoopId) cancelAnimationFrame(gameLoopId);
             
-            resizeCanvasForMobile(); // Asegurar tamaño correcto al iniciar
+            resizeCanvasForMobile(); 
 
             touchInput = { active: false, y: canvas.height/2, fire: false };
             score = 0;
@@ -851,6 +883,19 @@
                 ctx.globalAlpha = s.alpha;
                 ctx.fillRect(s.x, s.y, s.size, s.size);
             });
+            
+            // Draw BG Texts
+            if(Math.random() < 0.005) spawnBgText();
+            
+            bgTexts.forEach((t, i) => {
+                t.x -= t.spd;
+                ctx.fillStyle = '#333';
+                ctx.font = `900 ${t.size}px "Space Mono"`;
+                ctx.globalAlpha = 0.15; // Subliminal opacity
+                ctx.fillText(t.text, t.x, t.y);
+                if(t.x < -500) bgTexts.splice(i, 1);
+            });
+
             ctx.globalAlpha = 1;
 
             // Update UI
@@ -986,4 +1031,5 @@
     </script>
 </body>
 </html>
+
 
