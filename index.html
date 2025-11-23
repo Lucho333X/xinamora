@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XINA MORA | LA SEÑAL | MASTER V12</title>
+    <title>XINA MORA | LA SEÑAL | MASTER V13</title>
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,20 +36,13 @@
             font-family: var(--font-head); overflow-x: hidden; text-transform: uppercase;
         }
 
-        /* --- ROTATE DEVICE OVERLAY (Mobile Only) --- */
+        /* --- ROTATE OVERLAY (Hidden by default, controlled via JS class) --- */
         #rotateOverlay {
-            display: none;
+            display: none; /* Por defecto oculto */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10005;
+            background: #000; z-index: 20000; /* Z-index supremo */
             flex-direction: column; justify-content: center; align-items: center;
             color: var(--accent-color); text-align: center; padding: 20px;
-        }
-        
-        /* Mostrar overlay solo en pantallas pequeñas y orientación vertical */
-        @media (max-width: 900px) and (orientation: portrait) {
-            #rotateOverlay { display: flex; }
-            /* Ocultar el resto del juego mientras se pide rotar para evitar scroll */
-            #gameModal { visibility: hidden; }
         }
 
         /* --- CUSTOM CURSOR --- */
@@ -196,11 +189,12 @@
         }
         .newsletter-input:focus { border-color: var(--accent-color); outline: none; }
 
-        /* GAME UI */
+        /* GAME UI FIXES */
         .game-wrapper {
             position: relative; border: 2px solid var(--accent-color);
             box-shadow: 0 0 50px rgba(255, 51, 51, 0.15);
-            max-width: 100%; max-height: 100%; width: 800px;
+            max-width: 100%; /* Ajuste para evitar desbordamiento */
+            width: 800px;
         }
         canvas { display: block; background: #050505; cursor: crosshair; width: 100%; height: auto; }
         
@@ -243,7 +237,13 @@
             .hero h1 { font-size: 3.5rem; }
             .nav-links { display: none; }
             .controls-panel { bottom: 10px; right: 10px; }
-            .game-wrapper { width: 95%; }
+            
+            /* FIX JUEGO MOVIL: Asegurar que cabe en pantalla con márgenes */
+            .game-wrapper { width: 95vw; max-width: 95vw; margin: 0 auto; box-sizing: border-box; }
+            
+            /* FIX NEWSLETTER MOVIL: Más pequeña y manejable */
+            .newsletter-box { width: 90%; padding: 25px; margin: 0 auto; }
+            
             #mobileControlsHint { display: block; }
         }
     </style>
@@ -253,7 +253,7 @@
     <div id="cursor"></div>
     <div class="noise-overlay"></div>
 
-    <!-- ROTATE OVERLAY (Mobile) -->
+    <!-- ROTATE OVERLAY (Ahora controlado por JS al iniciar juego) -->
     <div id="rotateOverlay">
         <i class="fas fa-rotate" style="font-size: 4rem; margin-bottom: 20px;"></i>
         <h2 style="font-size: 1.5rem;">GIRA TU TELÉFONO</h2>
@@ -542,14 +542,16 @@
         });
 
         // ==========================================
-        // === GAME ENGINE V12: PERFECT MOBILE ===
+        // === GAME ENGINE V13: MOBILE FLOW FIX ===
         // ==========================================
         const modal = document.getElementById('gameModal');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const rotateOverlay = document.getElementById('rotateOverlay');
         
         let gameLoopId = null;
         let gameActive = false;
+        let gameRequested = false; // Nuevo estado: ¿El usuario quiere jugar?
         let score = 0;
         let shake = 0;
         let hitFlash = 0;
@@ -564,7 +566,7 @@
         document.addEventListener('keydown', e => { keys[e.code] = true; if(e.code==='Space'||e.code.startsWith('Arrow')) e.preventDefault(); });
         document.addEventListener('keyup', e => delete keys[e.code]);
         
-        // --- MOBILE INPUTS (REDESIGNED) ---
+        // --- MOBILE INPUTS ---
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             touchInput.active = true;
@@ -578,7 +580,6 @@
         
         canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
-            // Si no quedan dedos, desactivar todo
             if(e.touches.length === 0) {
                 touchInput.active = false;
                 touchInput.fire = false;
@@ -597,29 +598,54 @@
                 const tX = (t.clientX - rect.left) * (canvas.width / rect.width);
                 const tY = (t.clientY - rect.top) * (canvas.height / rect.height);
                 
-                // Pantalla dividida: >50% es disparar, <50% es mover
                 if(tX > canvas.width / 2) {
                     touchInput.fire = true;
                 } else {
-                    // Mano izquierda controla altura (Y)
                     touchInput.y = tY;
                     leftTouchFound = true;
                 }
             }
-            // Si solo estás disparando, no muevas la nave a "0" (arriba del todo)
-            if(!leftTouchFound && touches.length > 0) {
-                // Mantener Y actual si no hay dedo izquierdo
+        }
+
+        // --- GESTIÓN DE ORIENTACIÓN Y JUEGO ---
+        function checkGameOrientation() {
+            // Si el juego ha sido solicitado
+            if (gameRequested) {
+                // Si es pantalla pequeña y vertical
+                if (window.innerWidth < 900 && window.innerHeight > window.innerWidth) {
+                    rotateOverlay.style.display = 'flex'; // Muestra "GIRA"
+                    modal.style.display = 'none'; // Oculta el juego momentáneamente
+                    if (gameActive) {
+                        gameActive = false; // Pausa lógica si estaba corriendo
+                        if(gameLoopId) cancelAnimationFrame(gameLoopId);
+                    }
+                } else {
+                    // Es horizontal o escritorio
+                    rotateOverlay.style.display = 'none'; // Oculta "GIRA"
+                    modal.style.display = 'flex'; // Muestra juego
+                    if (!gameActive) {
+                        startGame(); // Inicia (o reanuda)
+                    }
+                }
+            } else {
+                // Si no se ha pedido el juego, asegurar que overlay esté oculto
+                rotateOverlay.style.display = 'none';
             }
         }
 
+        // Escuchar cambios de tamaño/orientación
+        window.addEventListener('resize', checkGameOrientation);
+
         function openGame() {
-            modal.style.display = 'flex';
+            gameRequested = true; // Activa la intención de jugar
             document.body.style.overflow = 'hidden';
-            startGame();
+            checkGameOrientation(); // Verifica inmediatamente
         }
 
         function closeGame() {
+            gameRequested = false; // Cancela intención
             modal.style.display = 'none';
+            rotateOverlay.style.display = 'none';
             document.body.style.overflow = 'auto';
             gameActive = false;
             if(gameLoopId) cancelAnimationFrame(gameLoopId);
@@ -648,27 +674,23 @@
         }
 
         function startGame() {
-            // 1. Limpieza total para evitar bugs de reinicio
             gameActive = false;
             if(gameLoopId) cancelAnimationFrame(gameLoopId);
             
-            // 2. Reset de estado
             touchInput = { active: false, y: 250, fire: false };
             score = 0;
             shake = 0;
             hitFlash = 0;
-            player = { x: 50, y: 250, w: 30, h: 20, spd: 8, cd: 0, hp: 3, maxHp: 3 }; // Velocidad aumentada para mejor respuesta táctil
+            player = { x: 50, y: 250, w: 30, h: 20, spd: 8, cd: 0, hp: 3, maxHp: 3 }; 
             entities = [];
             particles = [];
             initStars();
             
-            // 3. UI
             document.getElementById('gameOverScreen').style.display = 'none';
             document.getElementById('uiLayer').style.pointerEvents = 'none';
             document.getElementById('scoreHud').style.display = 'block';
             document.getElementById('livesHud').style.display = 'block';
             
-            // 4. Iniciar Loop
             gameActive = true;
             gameLoopId = requestAnimationFrame(gameLoop);
         }
@@ -737,18 +759,15 @@
 
             // Player Logic
             if (touchInput.active) {
-                // Mobile: Movimiento fluido hacia el dedo (Lerp)
                 const dy = touchInput.y - player.y;
                 if (Math.abs(dy) > 5) {
                     player.y += dy * 0.15; // Smooth factor
                 }
             } else {
-                // Desktop
                 if(keys['ArrowUp']) player.y -= player.spd;
                 if(keys['ArrowDown']) player.y += player.spd;
             }
             
-            // Boundaries
             player.y = Math.max(20, Math.min(canvas.height-20, player.y));
 
             // Draw Player
