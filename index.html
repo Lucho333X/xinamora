@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XINA MORA | LA SEÑAL | MASTER V14</title>
+    <title>XINA MORA | LA SEÑAL | MASTER V15</title>
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,7 +36,7 @@
             font-family: var(--font-head); overflow-x: hidden; text-transform: uppercase;
         }
 
-        /* --- ROTATE OVERLAY (Hidden by default, controlled via JS class) --- */
+        /* --- ROTATE OVERLAY --- */
         #rotateOverlay {
             display: none; /* Por defecto oculto */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -189,7 +189,7 @@
         }
         .newsletter-input:focus { border-color: var(--accent-color); outline: none; }
 
-        /* GAME UI FIXES */
+        /* GAME UI & WRAPPER */
         .game-wrapper {
             position: relative; border: 2px solid var(--accent-color);
             box-shadow: 0 0 50px rgba(255, 51, 51, 0.15);
@@ -221,7 +221,7 @@
             position: absolute; top: 20px; left: 20px; font-family: var(--font-mono);
             color: white; font-size: 1.2rem; display: none; text-shadow: 0 0 5px rgba(0,0,0,0.8);
             z-index: 100;
-            background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; /* Background para contraste */
+            background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; 
         }
         
         #livesHud {
@@ -241,9 +241,6 @@
             .nav-links { display: none; }
             .controls-panel { bottom: 10px; right: 10px; }
             
-            /* FIX JUEGO MOVIL: Asegurar que cabe en pantalla con márgenes */
-            .game-wrapper { width: 95vw; max-width: 95vw; margin: 0 auto; box-sizing: border-box; border-width: 1px; }
-            
             /* FIX NEWSLETTER MOVIL: Más pequeña y manejable */
             .newsletter-box { width: 90%; padding: 25px; margin: 0 auto; }
             
@@ -251,14 +248,51 @@
 
             /* --- HUD MÓVIL (REDISTRIBUIDO) --- */
             #scoreHud {
-                top: 10px; left: 10px; font-size: 0.9rem; /* Arriba Izquierda */
+                top: 10px; left: 10px; font-size: 0.9rem; 
                 text-shadow: 1px 1px 2px black;
                 padding: 3px 8px;
             }
             #livesHud {
-                bottom: auto; top: 10px; left: auto; right: 10px; /* Arriba Derecha (Lejos de pulgares) */
+                bottom: auto; top: 10px; left: auto; right: 10px; 
                 font-size: 0.8rem;
                 padding: 3px 8px;
+            }
+
+            /* --- FIX CORTE PANTALLA MÓVIL (FULLSCREEN) --- */
+            /* Cuando el modal del juego está activo en móvil, ocupa el 100% absoluto */
+            #gameModal {
+                padding: 0 !important;
+                justify-content: center;
+            }
+            
+            .game-wrapper { 
+                width: 100vw; 
+                height: 100vh; /* Ocupa todo el alto del viewport */
+                max-width: 100%;
+                border: none; /* Sin bordes para maximizar espacio */
+                border-radius: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #000;
+            }
+            
+            canvas {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; /* Ajuste para llenar sin deformar */
+            }
+
+            /* Botón de salir flotante en móvil */
+            .close-modal {
+                position: fixed;
+                top: 10px;
+                right: 50%;
+                transform: translateX(50%);
+                background: rgba(0,0,0,0.7);
+                padding: 5px 10px;
+                border: 1px solid #333;
+                z-index: 10003;
             }
         }
     </style>
@@ -268,7 +302,7 @@
     <div id="cursor"></div>
     <div class="noise-overlay"></div>
 
-    <!-- ROTATE OVERLAY (Ahora controlado por JS al iniciar juego) -->
+    <!-- ROTATE OVERLAY -->
     <div id="rotateOverlay">
         <i class="fas fa-rotate" style="font-size: 4rem; margin-bottom: 20px;"></i>
         <h2 style="font-size: 1.5rem;">GIRA TU TELÉFONO</h2>
@@ -464,7 +498,9 @@
         // --- AUDIO ENGINE ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration, vol = 0.1) {
-            if(audioCtx.state === 'suspended') audioCtx.resume();
+            // Intento de reanudar si está suspendido
+            if(audioCtx.state === 'suspended') audioCtx.resume().catch(e => console.log("Audio wait for interaction"));
+            
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = type;
@@ -557,23 +593,23 @@
         });
 
         // ==========================================
-        // === GAME ENGINE V14: VISUAL TWEAKS ===
+        // === GAME ENGINE V15: FULLSCREEN IMMERSION ===
         // ==========================================
         const modal = document.getElementById('gameModal');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const rotateOverlay = document.getElementById('rotateOverlay');
+        const gameWrapper = document.querySelector('.game-wrapper');
         
         let gameLoopId = null;
         let gameActive = false;
-        let gameRequested = false; // Nuevo estado: ¿El usuario quiere jugar?
+        let gameRequested = false; 
         let score = 0;
         let shake = 0;
         let hitFlash = 0;
         
         // Input State
         const keys = {};
-        // Reset inputs on start
         let touchInput = { active: false, y: 250, fire: false };
         let player = { x: 50, y: 250, spd: 5, cd: 0, hp: 3, maxHp: 3 };
 
@@ -581,9 +617,15 @@
         document.addEventListener('keydown', e => { keys[e.code] = true; if(e.code==='Space'||e.code.startsWith('Arrow')) e.preventDefault(); });
         document.addEventListener('keyup', e => delete keys[e.code]);
         
-        // --- MOBILE INPUTS ---
+        // --- MOBILE INPUTS & AUDIO UNLOCK ---
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            
+            // 1. UNLOCK AUDIO ON FIRST TOUCH
+            if(audioCtx.state === 'suspended') {
+                audioCtx.resume().then(() => console.log("Audio Resumed"));
+            }
+
             touchInput.active = true;
             updateTouch(e.touches);
         }, {passive: false});
@@ -622,46 +664,87 @@
             }
         }
 
-        // --- GESTIÓN DE ORIENTACIÓN Y JUEGO ---
+        // --- FULLSCREEN & RESIZE LOGIC ---
+        
+        // Función para intentar poner fullscreen real (oculta barra dirección)
+        function tryGoFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => console.log(err));
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        // Función para redimensionar el canvas exactamente al viewport
+        function resizeCanvasForMobile() {
+            if (window.innerWidth < 900) {
+                // En móvil, el canvas ocupa toda la pantalla real
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            } else {
+                // En desktop, tamaño fijo arcade
+                canvas.width = 800;
+                canvas.height = 500;
+            }
+        }
+
         function checkGameOrientation() {
-            // Si el juego ha sido solicitado
             if (gameRequested) {
-                // Si es pantalla pequeña y vertical
+                // Detectar si estamos en móvil y portrait
                 if (window.innerWidth < 900 && window.innerHeight > window.innerWidth) {
-                    rotateOverlay.style.display = 'flex'; // Muestra "GIRA"
-                    modal.style.display = 'none'; // Oculta el juego momentáneamente
+                    rotateOverlay.style.display = 'flex'; 
+                    modal.style.display = 'none'; 
                     if (gameActive) {
-                        gameActive = false; // Pausa lógica si estaba corriendo
+                        gameActive = false; 
                         if(gameLoopId) cancelAnimationFrame(gameLoopId);
                     }
                 } else {
-                    // Es horizontal o escritorio
-                    rotateOverlay.style.display = 'none'; // Oculta "GIRA"
-                    modal.style.display = 'flex'; // Muestra juego
+                    // Horizontal (o Desktop) -> JUEGO ACTIVO
+                    rotateOverlay.style.display = 'none'; 
+                    modal.style.display = 'flex'; 
+                    
+                    // Intenta Fullscreen si es móvil
+                    if (window.innerWidth < 900) {
+                        tryGoFullscreen();
+                        resizeCanvasForMobile(); // Ajustar resolución
+                    }
+
                     if (!gameActive) {
-                        startGame(); // Inicia (o reanuda)
+                        startGame();
                     }
                 }
             } else {
-                // Si no se ha pedido el juego, asegurar que overlay esté oculto
                 rotateOverlay.style.display = 'none';
             }
         }
 
-        // Escuchar cambios de tamaño/orientación
-        window.addEventListener('resize', checkGameOrientation);
+        window.addEventListener('resize', () => {
+            if(gameActive && window.innerWidth < 900) resizeCanvasForMobile();
+            checkGameOrientation();
+        });
 
         function openGame() {
-            gameRequested = true; // Activa la intención de jugar
+            gameRequested = true; 
             document.body.style.overflow = 'hidden';
-            checkGameOrientation(); // Verifica inmediatamente
+            checkGameOrientation(); 
         }
 
         function closeGame() {
-            gameRequested = false; // Cancela intención
+            gameRequested = false;
             modal.style.display = 'none';
             rotateOverlay.style.display = 'none';
             document.body.style.overflow = 'auto';
+            
+            // Salir de Fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(e => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+
             gameActive = false;
             if(gameLoopId) cancelAnimationFrame(gameLoopId);
             gameLoopId = null;
@@ -692,11 +775,13 @@
             gameActive = false;
             if(gameLoopId) cancelAnimationFrame(gameLoopId);
             
-            touchInput = { active: false, y: 250, fire: false };
+            resizeCanvasForMobile(); // Asegurar tamaño correcto al iniciar
+
+            touchInput = { active: false, y: canvas.height/2, fire: false };
             score = 0;
             shake = 0;
             hitFlash = 0;
-            player = { x: 50, y: 250, w: 30, h: 20, spd: 8, cd: 0, hp: 3, maxHp: 3 }; 
+            player = { x: 50, y: canvas.height/2, w: 30, h: 20, spd: 8, cd: 0, hp: 3, maxHp: 3 }; 
             entities = [];
             particles = [];
             initStars();
@@ -901,3 +986,4 @@
     </script>
 </body>
 </html>
+
