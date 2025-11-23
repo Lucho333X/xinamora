@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XINA MORA | LA SEÑAL | MASTER V9</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XINA MORA | LA SEÑAL | MASTER V10</title>
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
         :root {
             --bg-color: #050505;
             --text-color: #f0f0f0;
-            --accent-color: #ff3333; /* Rojo XINA Original */
+            --accent-color: #FF0000; /* CAMBIO: Rojo Potente (Pure Red) */
             --secondary-accent: #33ff33;
             --grid-line: #222;
             --font-head: 'Space Grotesk', sans-serif;
@@ -26,6 +26,9 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
+
+        /* Ajuste para móvil para evitar selección de texto al jugar */
+        canvas { touch-action: none; user-select: none; -webkit-user-select: none; }
 
         html { scroll-behavior: smooth; }
 
@@ -42,6 +45,12 @@
             mix-blend-mode: difference;
         }
         #cursor.active { background: var(--accent-color); width: 10px; height: 10px; }
+        
+        /* Ocultar cursor custom en movil */
+        @media (hover: none) and (pointer: coarse) {
+            #cursor { display: none; }
+            * { cursor: auto !important; }
+        }
         
         /* --- BACKGROUND FX --- */
         .noise-overlay {
@@ -71,7 +80,7 @@
             backdrop-filter: blur(5px); z-index: 100;
         }
         .logo-container img { 
-            height: 40px; /* Altura ajustada para el header */
+            height: 40px; 
             width: auto; 
             display: block;
         }
@@ -201,8 +210,9 @@
         .game-wrapper {
             position: relative; border: 2px solid var(--accent-color);
             box-shadow: 0 0 50px rgba(255, 51, 51, 0.15);
+            max-width: 100%; max-height: 100%;
         }
-        canvas { display: block; background: #050505; cursor: crosshair; }
+        canvas { display: block; background: #050505; cursor: crosshair; width: 100%; height: auto; }
         
         .ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
@@ -243,6 +253,12 @@
             position: absolute; top: 20px; left: 20px; font-family: var(--font-mono);
             color: white; font-size: 1.2rem; display: none; text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
+        
+        #mobileControlsHint {
+            position: absolute; bottom: 20px; width: 100%; text-align: center;
+            font-family: var(--font-mono); color: rgba(255,255,255,0.5); font-size: 0.7rem;
+            pointer-events: none; display: none;
+        }
 
         @media(max-width: 768px) {
             .mode-select { grid-template-columns: 1fr; padding: 20px; }
@@ -250,6 +266,10 @@
             .nav-links { display: none; }
             .controls-panel { bottom: 10px; right: 10px; }
             .game-wrapper canvas { width: 100%; height: auto; }
+            
+            /* Ajustes Móvil */
+            .mode-card { height: 180px; }
+            #mobileControlsHint { display: block; }
         }
     </style>
 </head>
@@ -335,7 +355,9 @@
             </div>
             <div class="action"><span class="ticket-tag">TICKETS</span></div>
         </div>
-        <div class="event-row hover-target" id="event-arg">
+        
+        <!-- CAMBIO: LINK ACTUALIZADO BUENOS AIRES -->
+        <div class="event-row hover-target" id="event-arg" onclick="window.open('https://www.passline.com/eventos/xina-mora-en-argentina-5-de-diciembre', '_blank')" style="cursor: pointer;">
             <div class="date">05.12</div>
             <div class="details">
                 <h3>BUENOS AIRES</h3>
@@ -343,6 +365,7 @@
             </div>
             <div class="action"><span class="ticket-tag">TICKETS</span></div>
         </div>
+
         <div class="event-row hover-target" id="event-chi">
             <div class="date">07.12</div>
             <div class="details">
@@ -373,7 +396,7 @@
         </div>
     </footer>
 
-    <!-- MODAL NEWSLETTER INICIAL (ACTUALIZADO CON FORMSPREE) -->
+    <!-- MODAL NEWSLETTER INICIAL -->
     <div id="newsletterModal" class="modal-overlay">
         <div class="newsletter-box">
             <div class="close-modal hover-target" onclick="closeNewsletter()" style="top:10px; right:20px; font-size:1.5rem;">✕</div>
@@ -403,6 +426,7 @@
             <canvas id="gameCanvas" width="800" height="500"></canvas>
             
             <div id="scoreHud"></div>
+            <div id="mobileControlsHint">MÓVIL: TOCA IZQUIERDA PARA MOVER / DERECHA PARA DISPARAR</div>
 
             <div id="uiLayer" class="ui-layer">
                 <!-- Selección -->
@@ -421,12 +445,12 @@
                     <div class="mode-card hover-target" onclick="selectMode('ZOMBIES')">
                         <i class="fas fa-biohazard" style="font-size: 3rem; margin-bottom: 20px; color: #fff;"></i>
                         <h3>TECHNO ZOMBIES</h3>
-                        <p>CONTROLES: RATÓN + CLICK/ESPACIO</p>
+                        <p>CONTROLES: RATÓN + CLICK</p>
                         <div style="color: var(--secondary-accent);">[ START ]</div>
                     </div>
                 </div>
 
-                <!-- Game Over (ACTUALIZADO CON FORMSPREE) -->
+                <!-- Game Over -->
                 <div id="gameOverScreen" class="newsletter-box" style="display:none; border-color:var(--accent-color);">
                     <h2 style="color: var(--accent-color); text-shadow: 0 0 10px red;">HAS MUERTO</h2>
                     <p style="margin: 10px 0; font-family: var(--font-mono);">LA SEÑAL SE HA PERDIDO.</p>
@@ -533,47 +557,32 @@
             if(audio.paused) toggleMusic();
         }
 
-        // --- MANEJO DE FORMULARIOS REALES CON FETCH (FORM SPREE) ---
-
-        // Función para manejar el envío real del formulario del Game Over
+        // --- MANEJO DE FORMULARIOS ---
         async function handleExitFormSubmit(e) {
             e.preventDefault();
             const form = e.target;
             const btn = document.getElementById('sendExitBtn');
             const status = document.getElementById('exitStatus');
-            
-            // 1. Recoger Score y Wave
             document.getElementById('hiddenScoreInput').value = `Score: ${score} - Wave: ${wave}`;
-
             btn.disabled = true;
             btn.innerText = "CONECTANDO...";
             status.innerHTML = `ENVIANDO INFORME...`;
             status.style.color = "#33ff33";
-
             try {
                 const response = await fetch(form.action, {
                     method: form.method,
                     body: new FormData(form),
                     headers: { 'Accept': 'application/json' }
                 });
-
                 if (response.ok) {
-                    status.innerHTML = "SEÑAL VERIFICADA: Informe enviado con éxito.";
-                    status.style.color = "#33ff33";
-                    
-                    setTimeout(() => {
-                        closeGame();
-                        // Limpiar y resetear el formulario al cerrar el modal
-                        form.reset();
-                        status.innerHTML = "";
-                    }, 2000);
+                    status.innerHTML = "SEÑAL VERIFICADA: Informe enviado.";
+                    setTimeout(() => { closeGame(); form.reset(); status.innerHTML = ""; }, 2000);
                 } else {
-                    status.innerHTML = "ERROR: El servidor de señales falló. Intenta de nuevo.";
+                    status.innerHTML = "ERROR DE SERVIDOR.";
                     status.style.color = "red";
                 }
             } catch (error) {
-                console.error('Error de red al enviar el formulario:', error);
-                status.innerHTML = "ERROR DE CONEXIÓN. Revisa tu conexión a internet.";
+                status.innerHTML = "ERROR DE CONEXIÓN.";
                 status.style.color = "red";
             } finally {
                 btn.disabled = false;
@@ -581,39 +590,28 @@
             }
         }
 
-        // Función para manejar el envío del formulario de la Newsletter
         async function handleNewsletterSubmit(e) {
             e.preventDefault();
             const form = e.target;
             const btn = document.getElementById('newsletterBtn');
             const status = document.getElementById('newsletterStatus');
-
             btn.disabled = true;
             btn.innerText = "VERIFICANDO...";
-            status.innerHTML = "";
-            
             try {
                 const response = await fetch(form.action, {
                     method: form.method,
                     body: new FormData(form),
                     headers: { 'Accept': 'application/json' }
                 });
-
                 if (response.ok) {
                     status.innerHTML = "¡GRACIAS! Ya estás en la lista.";
                     status.style.color = "#33ff33";
-                    
-                    setTimeout(() => {
-                        closeNewsletter();
-                        form.reset();
-                        status.innerHTML = "";
-                    }, 2000);
+                    setTimeout(() => { closeNewsletter(); form.reset(); status.innerHTML = ""; }, 2000);
                 } else {
-                    status.innerHTML = "ERROR: No pudimos procesar la suscripción.";
+                    status.innerHTML = "ERROR.";
                     status.style.color = "red";
                 }
             } catch (error) {
-                console.error('Error de red al suscribirse:', error);
                 status.innerHTML = "ERROR DE CONEXIÓN.";
                 status.style.color = "red";
             } finally {
@@ -621,7 +619,6 @@
                 btn.innerText = "SUSCRIBIRSE";
             }
         }
-
 
         // --- GENERAL UI ---
         setTimeout(() => { document.getElementById('newsletterModal').style.display = 'flex'; }, 15000);
@@ -640,21 +637,14 @@
         });
 
         window.addEventListener('load', () => {
-            // Asigna los listeners de envío
             const exitForm = document.getElementById('exitForm');
             const newsletterForm = document.getElementById('newsletterForm');
-            
-            if (exitForm) {
-                exitForm.addEventListener('submit', handleExitFormSubmit);
-            }
-            if (newsletterForm) {
-                newsletterForm.addEventListener('submit', handleNewsletterSubmit);
-            }
+            if (exitForm) exitForm.addEventListener('submit', handleExitFormSubmit);
+            if (newsletterForm) newsletterForm.addEventListener('submit', handleNewsletterSubmit);
         });
 
-
         // ==========================================
-        // === GAME ENGINE V7 (LOGIC PRESERVED) ===
+        // === GAME ENGINE V10 (MOBILE ENHANCED) ===
         // ==========================================
         const modal = document.getElementById('gameModal');
         const canvas = document.getElementById('gameCanvas');
@@ -663,328 +653,300 @@
         let gameLoopId;
         let gameActive = false;
         let mode = null;
-        
         let score = 0;
-        let displayScore = 0;
-        let frame = 0;
+        let wave = 1;
         let shake = 0;
-        let wave = 111;
-
+        
         const keys = {};
         const mouse = { x: 400, y: 250, down: false };
 
+        // INPUTS ESCRITORIO
         document.addEventListener('keydown', e => { keys[e.code] = true; if(e.code==='Space'||e.code.startsWith('Arrow')) e.preventDefault(); });
-        document.addEventListener('keyup', e => keys[e.code] = false);
-        
+        document.addEventListener('keyup', e => delete keys[e.code]);
         canvas.addEventListener('mousemove', e => {
             const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            mouse.x = (e.clientX - rect.left) * scaleX;
-            mouse.y = (e.clientY - rect.top) * scaleY;
+            mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
         });
         canvas.addEventListener('mousedown', () => mouse.down = true);
         canvas.addEventListener('mouseup', () => mouse.down = false);
 
-        let player = {};
-        let bullets = [];
-        let enemies = [];
-        let particles = [];
-        let stars = [];
-        let zombiesToSpawn = 0;
+        // --- INPUTS MÓVIL (NUEVO) ---
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const tX = (touch.clientX - rect.left) * (canvas.width / rect.width);
+            const tY = (touch.clientY - rect.top) * (canvas.height / rect.height);
+            
+            mouse.x = tX;
+            mouse.y = tY;
 
+            if(mode === 'SPACESHIP') {
+                // Mitad derecha dispara, Mitad izquierda mueve (siguiendo Y)
+                if(tX > canvas.width / 2) {
+                    keys['Space'] = true;
+                }
+            } else if (mode === 'Zombies') {
+                mouse.down = true;
+            }
+        }, {passive: false});
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const tX = (touch.clientX - rect.left) * (canvas.width / rect.width);
+            const tY = (touch.clientY - rect.top) * (canvas.height / rect.height);
+            
+            mouse.x = tX;
+            mouse.y = tY;
+        }, {passive: false});
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys['Space'] = false;
+            mouse.down = false;
+        });
+
+        // --- GAME LOGIC ---
         function openGame() {
             modal.style.display = 'flex';
-            showModeSelect();
-        }
-        function closeGame() {
-            modal.style.display = 'none';
-            gameActive = false;
-            cancelAnimationFrame(gameLoopId);
+            document.body.style.overflow = 'hidden';
         }
 
-        function showModeSelect() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+        function closeGame() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            gameActive = false;
+            cancelAnimationFrame(gameLoopId);
+            document.getElementById('uiLayer').style.pointerEvents = 'none';
             document.getElementById('modeSelect').style.display = 'grid';
             document.getElementById('gameOverScreen').style.display = 'none';
             document.getElementById('winScreen').style.display = 'none';
             document.getElementById('scoreHud').style.display = 'none';
-            document.getElementById('controlsText').innerText = "/// SYSTEM READY";
         }
 
-        function selectMode(selectedMode) {
-            mode = selectedMode;
+        function showModeSelect() {
+            gameActive = false;
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('modeSelect').style.display = 'grid';
+        }
+
+        function selectMode(selected) {
+            mode = selected;
+            document.getElementById('modeSelect').style.display = 'none';
+            document.getElementById('scoreHud').style.display = 'block';
             startGame();
         }
 
+        // Entidades
+        let player, entities = [], particles = [];
+
         function startGame() {
-            document.getElementById('modeSelect').style.display = 'none';
-            document.getElementById('scoreHud').style.display = 'block';
-            
             gameActive = true;
-            score = 0; displayScore = 0;
-            bullets = []; enemies = []; particles = []; frame = 0;
-            
+            score = 0;
+            wave = 1;
+            entities = [];
+            particles = [];
+            shake = 0;
+
             if(mode === 'SPACESHIP') {
-                initSpaceship();
-                document.getElementById('controlsText').innerText = "PILOTA CON FLECHAS • DISPARA CON ESPACIO";
+                player = { x: 50, y: 250, w: 30, h: 20, spd: 5, cd: 0 };
             } else {
-                initZombies();
-                document.getElementById('controlsText').innerText = "MUEVE CON RATÓN • DISPARA CON CLICK/ESPACIO";
+                player = { x: 400, y: 250, hp: 100, cd: 0 };
             }
-
-            if(audio.paused) toggleMusic();
-            loop();
-        }
-
-        function loop() {
-            if(!gameActive) return;
-            frame++;
-            
-            if(shake > 0) shake *= 0.9;
-            let dx = (Math.random()-0.5)*shake;
-            let dy = (Math.random()-0.5)*shake;
-
-            if(displayScore < score) displayScore += Math.ceil((score - displayScore)*0.2);
-
-            ctx.save();
-            ctx.translate(dx, dy);
-
-            if(mode === 'SPACESHIP') updateSpaceship();
-            else updateZombies();
-
-            ctx.restore();
-
-            let hpColor = player.hp > 50 ? '#fff' : '#ff0000';
-            let waveText = mode === 'ZOMBIES' ? ` | WAVE: ${wave}` : '';
-            document.getElementById('scoreHud').innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--accent-color')}">SCORE:</span> ${displayScore} <span style="color:${hpColor}">| HP: ${Math.floor(player.hp)}%</span>${waveText}`;
-
-            gameLoopId = requestAnimationFrame(loop);
-        }
-
-        // --- SPACESHIP LOGIC ---
-        function initSpaceship() {
-            player = { x: 50, y: 250, size: 20, speed: 8, hp: 100, cooldown: 0 };
-            stars = [];
-            for(let i=0; i<80; i++) stars.push({x:Math.random()*800, y:Math.random()*500, s:Math.random()*3+2});
-        }
-
-        function updateSpaceship() {
-            if(keys.ArrowUp && player.y > 20) player.y -= player.speed;
-            if(keys.ArrowDown && player.y < 480) player.y += player.speed;
-            if(keys.ArrowLeft && player.x > 20) player.x -= player.speed;
-            if(keys.ArrowRight && player.x < 780) player.x += player.speed;
-
-            if(keys.Space && player.cooldown <= 0) {
-                bullets.push({ x: player.x+20, y: player.y, w:30, h:4, color: '#ccff00' });
-                player.cooldown = 8;
-                sfxShoot();
-            }
-            if(player.cooldown > 0) player.cooldown--;
-
-            bullets.forEach(b => b.x += 20);
-            bullets = bullets.filter(b => b.x < 850);
-
-            if(frame % 30 === 0) {
-                enemies.push({ x: 850, y: Math.random()*460+20, size: 25, speed: 5+(score/2000) });
-            }
-            enemies.forEach(e => { e.x -= e.speed; });
-
-            enemies.forEach((e, ei) => {
-                if(Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size) {
-                    player.hp -= 20; shake = 15; sfxExplosion();
-                    enemies.splice(ei, 1);
-                    createParticles(player.x, player.y, '#ff0000', 20);
-                }
-                bullets.forEach((b, bi) => {
-                    if(Math.hypot(b.x - e.x, b.y - e.y) < e.size + 10) {
-                        enemies.splice(ei, 1); bullets.splice(bi, 1);
-                        score += 100; sfxExplosion();
-                        createParticles(e.x, e.y, '#ccff00', 10);
-                    }
-                });
-            });
-            enemies = enemies.filter(e => e.x > -50);
-            if(player.hp <= 0) gameOver();
-
-            ctx.fillStyle = '#050505'; ctx.fillRect(0,0,800,500);
-            ctx.fillStyle = '#444';
-            stars.forEach(s => {
-                s.x -= s.s * 2; if(s.x<0) s.x=800;
-                ctx.fillRect(s.x, s.y, s.s*3, 2);
-            });
-
-            ctx.translate(player.x, player.y);
-            ctx.fillStyle = '#fff';
-            ctx.beginPath(); ctx.moveTo(25,0); ctx.lineTo(-15,15); ctx.lineTo(-10,0); ctx.lineTo(-15,-15); ctx.fill();
-            ctx.fillStyle = `rgba(255, 50, 50, ${Math.random()})`;
-            ctx.beginPath(); ctx.moveTo(-15, 5); ctx.lineTo(-35 - Math.random()*10, 0); ctx.lineTo(-15, -5); ctx.fill();
-            ctx.translate(-player.x, -player.y);
-
-            enemies.forEach(e => {
-                ctx.fillStyle = '#ff0000';
-                ctx.beginPath(); ctx.moveTo(e.x-e.size, e.y); ctx.lineTo(e.x+e.size, e.y-10); ctx.lineTo(e.x+e.size, e.y+10); ctx.fill();
-            });
-
-            ctx.fillStyle = '#ccff00';
-            bullets.forEach(b => {
-                ctx.shadowBlur = 10; ctx.shadowColor = '#ccff00';
-                ctx.fillRect(b.x, b.y, b.w, b.h);
-                ctx.shadowBlur = 0;
-            });
-            
-            drawParticles();
-        }
-
-        // --- ZOMBIE LOGIC ---
-        function initZombies() {
-            player = { x: 400, y: 250, size: 15, speed: 0.1, hp: 100, cooldown: 0, angle: 0 };
-            wave = 111;
-            startZombieWave();
-        }
-
-        function startZombieWave() {
-            zombiesToSpawn = Math.floor(wave / 20) + 3; 
-            if(wave >= 999) {
-                document.getElementById('winScreen').style.display = 'block';
-                gameActive = false;
-            }
-        }
-
-        function updateZombies() {
-            player.x += (mouse.x - player.x) * player.speed;
-            player.y += (mouse.y - player.y) * player.speed;
-            player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
-
-            if((mouse.down || keys.Space) && player.cooldown <= 0) {
-                bullets.push({ 
-                    x: player.x, y: player.y, 
-                    vx: Math.cos(player.angle) * 15, vy: Math.sin(player.angle) * 15, 
-                    life: 50 
-                });
-                player.cooldown = 10;
-                shake = 2;
-                sfxShoot();
-            }
-            if(player.cooldown > 0) player.cooldown--;
-
-            bullets.forEach(b => { b.x += b.vx; b.y += b.vy; b.life--; });
-            bullets = bullets.filter(b => b.life > 0);
-
-            if(zombiesToSpawn > 0 && frame % 60 === 0) {
-                let a = Math.random() * 6.28;
-                let r = 500;
-                enemies.push({
-                    x: 400 + Math.cos(a)*r, y: 250 + Math.sin(a)*r,
-                    speed: 1 + (wave/1000), 
-                    hp: 2, size: 15
-                });
-                zombiesToSpawn--;
-            }
-            if(zombiesToSpawn === 0 && enemies.length === 0) {
-                wave += 111;
-                player.hp = Math.min(100, player.hp + 20);
-                startZombieWave();
-            }
-
-            enemies.forEach((e, ei) => {
-                let ang = Math.atan2(player.y - e.y, player.x - e.x);
-                e.x += Math.cos(ang) * e.speed;
-                e.y += Math.sin(ang) * e.speed;
-
-                if(Math.hypot(player.x - e.x, player.y - e.y) < 25) {
-                    player.hp -= 1; shake = 3;
-                    if(frame % 10 === 0) createParticles(player.x, player.y, '#ff0000', 2);
-                }
-
-                bullets.forEach((b, bi) => {
-                    if(Math.hypot(b.x - e.x, b.y - e.y) < 30) {
-                        e.hp--;
-                        bullets.splice(bi, 1);
-                        createParticles(e.x, e.y, '#ccff00', 5);
-                        sfxZombieHit();
-                        if(e.hp <= 0) {
-                            enemies.splice(ei, 1);
-                            score += 50;
-                            createParticles(e.x, e.y, '#33ff33', 15); 
-                            sfxExplosion();
-                        }
-                    }
-                });
-            });
-            if(player.hp <= 0) gameOver();
-
-            ctx.fillStyle = '#080808'; ctx.fillRect(0,0,800,500);
-            ctx.strokeStyle = `rgba(50, 0, 0, ${0.2 + Math.sin(frame*0.1)*0.1})`;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            for(let i=0;i<800;i+=50) { ctx.moveTo(i,0); ctx.lineTo(i,500); }
-            for(let i=0;i<500;i+=50) { ctx.moveTo(0,i); ctx.lineTo(800,i); }
-            ctx.stroke();
-
-            drawParticles();
-
-            ctx.save();
-            ctx.translate(player.x, player.y);
-            ctx.rotate(player.angle);
-            ctx.fillStyle = '#fff';
-            ctx.beginPath(); ctx.arc(0,0,12,0,6.28); ctx.fill();
-            ctx.fillStyle = '#ccff00'; ctx.fillRect(5, -2, 20, 4);
-            ctx.restore();
-
-            enemies.forEach(e => {
-                ctx.fillStyle = '#33ff33'; 
-                ctx.beginPath(); ctx.arc(e.x, e.y, e.size, 0, Math.PI*2); ctx.fill();
-                
-                let angle = Math.atan2(player.y - e.y, player.x - e.x);
-                ctx.strokeStyle = '#33ff33'; ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.moveTo(e.x + Math.cos(angle+0.5)*e.size, e.y + Math.sin(angle+0.5)*e.size);
-                ctx.lineTo(e.x + Math.cos(angle+0.5)*(e.size+10), e.y + Math.sin(angle+0.5)*(e.size+10));
-                ctx.moveTo(e.x + Math.cos(angle-0.5)*e.size, e.y + Math.sin(angle-0.5)*e.size);
-                ctx.lineTo(e.x + Math.cos(angle-0.5)*(e.size+10), e.y + Math.sin(angle-0.5)*(e.size+10));
-                ctx.stroke();
-
-                ctx.fillStyle = '#ff0000';
-                ctx.beginPath();
-                ctx.arc(e.x + Math.cos(angle-0.3)*5, e.y + Math.sin(angle-0.3)*5, 2, 0, Math.PI*2);
-                ctx.arc(e.x + Math.cos(angle+0.3)*5, e.y + Math.sin(angle+0.3)*5, 2, 0, Math.PI*2);
-                ctx.fill();
-            });
-
-            ctx.fillStyle = '#ffff00';
-            bullets.forEach(b => {
-                ctx.beginPath(); ctx.arc(b.x, b.y, 3, 0, 6.28); ctx.fill();
-            });
-        }
-
-        function createParticles(x, y, color, count) {
-            for(let i=0; i<count; i++) {
-                particles.push({
-                    x: x, y: y, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
-                    life: 40, color: color
-                });
-            }
-        }
-
-        function drawParticles() {
-            particles.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy; p.life--;
-                p.vx *= 0.9; p.vy *= 0.9;
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.life / 40;
-                ctx.fillRect(p.x, p.y, 3, 3);
-                if(p.life <= 0) particles.splice(i, 1);
-            });
-            ctx.globalAlpha = 1;
+            gameLoop();
         }
 
         function gameOver() {
             gameActive = false;
-            document.getElementById('scoreHud').style.display = 'none';
+            sfxExplosion();
+            document.getElementById('uiLayer').style.pointerEvents = 'auto';
             document.getElementById('gameOverScreen').style.display = 'block';
         }
 
+        function spawnParticles(x, y, color, count=5) {
+            for(let i=0; i<count; i++) {
+                particles.push({
+                    x, y, 
+                    vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5,
+                    life: 1.0, color
+                });
+            }
+        }
+
+        function gameLoop() {
+            if(!gameActive) return;
+
+            // Clear & Shake
+            ctx.fillStyle = '#050505';
+            ctx.save();
+            if(shake > 0) {
+                ctx.translate(Math.random()*shake - shake/2, Math.random()*shake - shake/2);
+                shake *= 0.9;
+            }
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            // Update Score
+            document.getElementById('scoreHud').innerText = `SCORE: ${score}`;
+
+            if(mode === 'SPACESHIP') updateSpaceship();
+            else updateZombies();
+
+            // Particles
+            particles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life;
+                ctx.fillRect(p.x, p.y, 2, 2);
+                if(p.life <= 0) particles.splice(i, 1);
+            });
+            ctx.globalAlpha = 1;
+            ctx.restore();
+
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function updateSpaceship() {
+            // Player Logic (Desktop + Mobile via keys injection/mouse Y)
+            let moveUp = keys['ArrowUp'];
+            let moveDown = keys['ArrowDown'];
+            
+            // Movimiento táctil: si no hay teclas, la nave sigue al dedo en Y
+            if(!moveUp && !moveDown && mouse.y !== 0) {
+                if(player.y < mouse.y - 10) player.y += player.spd;
+                if(player.y > mouse.y + 10) player.y -= player.spd;
+            } else {
+                if(moveUp) player.y -= player.spd;
+                if(moveDown) player.y += player.spd;
+            }
+
+            // Boundaries
+            player.y = Math.max(20, Math.min(canvas.height-20, player.y));
+
+            // Draw Ship
+            ctx.strokeStyle = 'cyan'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(player.x+20, player.y); 
+            ctx.lineTo(player.x-10, player.y-10); ctx.lineTo(player.x-10, player.y+10); 
+            ctx.closePath(); ctx.stroke();
+
+            // Shoot
+            if(player.cd > 0) player.cd--;
+            if(keys['Space'] && player.cd <= 0) {
+                entities.push({ type: 'bullet', x: player.x+20, y: player.y, w: 10, h: 4, vx: 10 });
+                sfxShoot();
+                player.cd = 10;
+            }
+
+            // Spawn Enemies
+            if(Math.random() < 0.02 + (score/5000)) {
+                entities.push({ 
+                    type: 'enemy', x: canvas.width, y: Math.random()*(canvas.height-40)+20, 
+                    w: 20, h: 20, vx: -(3 + Math.random()*3) 
+                });
+            }
+
+            // Process Entities
+            for(let i = entities.length-1; i>=0; i--) {
+                let e = entities[i];
+                e.x += e.vx;
+                
+                if(e.type === 'bullet') {
+                    ctx.fillStyle = 'cyan'; ctx.fillRect(e.x, e.y, e.w, e.h);
+                    if(e.x > canvas.width) entities.splice(i, 1);
+                } else if(e.type === 'enemy') {
+                    ctx.strokeStyle = '#ff3333'; ctx.strokeRect(e.x, e.y, e.w, e.h);
+                    
+                    // Collision Ship
+                    if(Math.abs(e.x - player.x) < 20 && Math.abs(e.y - player.y) < 20) {
+                        gameOver();
+                    }
+                    if(e.x < 0) entities.splice(i, 1);
+                }
+
+                // Bullet Hit Enemy
+                if(e.type === 'bullet') {
+                    for(let j=0; j<entities.length; j++) {
+                        let t = entities[j];
+                        if(t.type === 'enemy' && Math.abs(e.x - t.x) < 20 && Math.abs(e.y - t.y) < 20) {
+                            spawnParticles(t.x, t.y, '#ff3333');
+                            entities.splice(j, 1);
+                            entities.splice(i, 1);
+                            score += 100;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateZombies() {
+            // Aim Line
+            ctx.strokeStyle = 'rgba(51,255,51,0.3)';
+            ctx.beginPath(); ctx.moveTo(player.x, player.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+
+            // Player
+            ctx.fillStyle = '#33ff33'; ctx.fillRect(player.x-5, player.y-5, 10, 10);
+
+            // Shoot
+            if(player.cd > 0) player.cd--;
+            if((mouse.down || keys['Space']) && player.cd <= 0) {
+                let angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+                entities.push({ 
+                    type: 'bullet', x: player.x, y: player.y, 
+                    vx: Math.cos(angle)*12, vy: Math.sin(angle)*12, life: 50
+                });
+                sfxShoot();
+                player.cd = 8;
+                shake = 2;
+            }
+
+            // Spawn Zombies
+            if(Math.random() < 0.02 + (score/10000)) {
+                let side = Math.floor(Math.random()*4);
+                let zx, zy;
+                if(side==0) { zx=Math.random()*canvas.width; zy=-20; }
+                if(side==1) { zx=canvas.width+20; zy=Math.random()*canvas.height; }
+                if(side==2) { zx=Math.random()*canvas.width; zy=canvas.height+20; }
+                if(side==3) { zx=-20; zy=Math.random()*canvas.height; }
+                
+                entities.push({ type: 'zombie', x: zx, y: zy, w: 15, spd: 1 + Math.random() });
+            }
+
+            // Process
+            for(let i = entities.length-1; i>=0; i--) {
+                let e = entities[i];
+                if(e.type === 'bullet') {
+                    e.x += e.vx; e.y += e.vy; e.life--;
+                    ctx.fillStyle = '#33ff33'; ctx.fillRect(e.x-2, e.y-2, 4, 4);
+                    if(e.life <= 0) entities.splice(i, 1);
+                } else if(e.type === 'zombie') {
+                    let angle = Math.atan2(player.y - e.y, player.x - e.x);
+                    e.x += Math.cos(angle) * e.spd;
+                    e.y += Math.sin(angle) * e.spd;
+                    
+                    ctx.strokeStyle = '#fff'; ctx.strokeRect(e.x-7, e.y-7, 14, 14);
+
+                    if(Math.hypot(player.x-e.x, player.y-e.y) < 15) gameOver();
+                }
+
+                // Collisions
+                if(e.type === 'bullet') {
+                    for(let j=0; j<entities.length; j++) {
+                        let t = entities[j];
+                        if(t.type === 'zombie' && Math.hypot(e.x-t.x, e.y-t.y) < 15) {
+                            spawnParticles(t.x, t.y, '#fff');
+                            sfxZombieHit();
+                            entities.splice(j, 1);
+                            entities.splice(i, 1);
+                            score += 50;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     </script>
 </body>
 </html>
