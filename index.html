@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XINA MORA | LA SEÑAL | MASTER V17</title>
+    <title>XINA MORA | 2026 | SYSTEM V2.0</title>
     
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +34,12 @@
         body {
             background-color: var(--bg-color); color: var(--text-color);
             font-family: var(--font-head); overflow-x: hidden; text-transform: uppercase;
+        }
+
+        /* --- BACKGROUND CANVAS (Cyber Rain) --- */
+        #bgCanvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.15; pointer-events: none;
         }
 
         /* --- ROTATE OVERLAY --- */
@@ -73,21 +79,25 @@
         }
         .ticker {
             display: inline-block; white-space: nowrap; padding: 10px 0;
-            animation: ticker 15s linear infinite; font-family: var(--font-mono);
+            animation: ticker 20s linear infinite; font-family: var(--font-mono);
             font-weight: 700; font-size: 1.2rem;
         }
         .ticker__item { padding: 0 2rem; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-        /* --- HEADER --- */
+        /* --- HEADER (GLASS EFFECT) --- */
         header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 40px; border-bottom: 1px solid var(--grid-line);
-            position: sticky; top: 0; background: rgba(5, 5, 5, 0.95);
-            backdrop-filter: blur(5px); z-index: 100;
+            padding: 20px 40px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky; top: 0; 
+            background: rgba(0, 0, 0, 0.3); /* Transparencia alta */
+            backdrop-filter: blur(15px); /* Efecto cristal */
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 100;
         }
         .logo-container img { 
-            height: 40px; width: auto; display: block;
+            height: 55px; width: auto; display: block; /* LOGO MÁS GRANDE */
         }
         .nav-links { display: flex; gap: 40px; font-family: var(--font-mono); font-size: 0.85rem; }
         .nav-links li { transition: 0.2s; }
@@ -107,19 +117,62 @@
         .audio-group { display: flex; gap: 5px; background: #000; padding: 5px; border: 1px solid #333; }
         .active-music { background-color: var(--accent-color) !important; color: #000 !important; border-color: var(--accent-color) !important; }
 
-        /* --- HERO --- */
-        .hero { padding: 80px 40px; border-bottom: 1px solid var(--grid-line); position: relative; }
-        .hero h1 {
-            font-size: clamp(3rem, 8vw, 8rem); line-height: 0.85; font-weight: 800;
-            letter-spacing: -3px; margin-bottom: 30px;
+        /* --- NEW COVER SECTION (PAGE 1) --- */
+        .cover-section {
+            width: 100%;
+            height: 90vh; /* Ocupa casi toda la pantalla */
+            border-bottom: 1px solid var(--grid-line);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .glitch-text { display: inline-block; transition: 0.3s; }
-        .hero:hover .glitch-text { color: var(--accent-color); transform: skewX(-10deg); }
+        .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* AJUSTE CLAVE: Centrado con ligero enfoque arriba (para que no corte la cara) */
+            object-position: center 30%; 
+            display: block;
+        }
+
+        /* --- HERO / TEXT SECTION (PAGE 2) --- */
+        .hero { 
+            padding: 80px 40px; 
+            min-height: auto;
+            border-bottom: 1px solid var(--grid-line); 
+            position: relative; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; /* CENTRADO HORIZONTAL */
+            text-align: center;  /* CENTRADO DE TEXTO */
+        }
+        .hero h1 {
+            font-size: clamp(4rem, 11vw, 11rem); line-height: 0.8; font-weight: 900;
+            letter-spacing: -4px; margin-bottom: 30px; text-transform: uppercase;
+        }
+        
+        /* EFECTO GLITCH LIMPIO - OPTIMIZADO */
+        .glitch-text { 
+            display: inline-block; 
+            transition: 0.1s; /* Más rápido para respuesta inmediata */
+            position: relative; 
+            will-change: transform, color; /* OPTIMIZACIÓN DE RENDIMIENTO */
+            transform: translate3d(0,0,0); /* Activa aceleración hardware */
+        }
+        .hero:hover .glitch-text { 
+            color: var(--accent-color); 
+            transform: skewX(-10deg) translateX(5px);
+            text-shadow: none;
+        }
 
         .cta-btn {
             padding: 15px 40px; background: transparent; border: 2px solid var(--text-color);
             color: var(--text-color); font-family: var(--font-mono); font-weight: 700;
             font-size: 1rem; position: relative; overflow: hidden; transition: 0.3s; margin-top: 20px;
+            width: fit-content;
         }
         .cta-btn::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
@@ -129,36 +182,61 @@
         .cta-btn:hover { border-color: var(--accent-color); color: black; box-shadow: 0 0 20px var(--accent-color); }
         .cta-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* --- EVENTS --- */
-        .events-container { border-bottom: 1px solid var(--grid-line); scroll-margin-top: 80px; }
-        .filter-bar {
-            display: flex; gap: 20px; padding: 20px 40px; border-bottom: 1px solid var(--grid-line);
-            font-family: var(--font-mono); font-size: 0.9rem; overflow-x: auto; position: sticky; top: 80px; background: var(--bg-color); z-index: 90;
+        /* --- NEWSLETTER INLINE --- */
+        .inline-newsletter {
+            margin: 80px auto 0 auto; /* CENTRADO */
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
         }
-        .filter-btn { opacity: 0.5; transition: 0.3s; cursor: none; }
-        .filter-btn.active, .filter-btn:hover { opacity: 1; color: var(--accent-color); text-decoration: underline; }
+        .inline-newsletter h3 {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        .inline-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .inline-input {
+            background: transparent;
+            border: 1px solid #333;
+            padding: 15px;
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: 0.3s;
+            text-align: center; /* Texto centrado en inputs */
+        }
+        .inline-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
 
-        .event-row {
-            display: grid; grid-template-columns: 1fr 3fr 1fr; padding: 25px 40px;
-            border-bottom: 1px solid #1a1a1a; align-items: center; transition: 0.2s;
-            scroll-margin-top: 140px; 
+        /* Scanline Effect Overlay (Global) */
+        .scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 2;
         }
-        .event-row:hover { background: var(--text-color); color: var(--bg-color); }
-        .event-row:hover .date { color: var(--bg-color); }
-        .date { font-family: var(--font-mono); color: var(--accent-color); font-weight: 700; font-size: 1.5rem; }
-        .ticket-tag { border: 1px solid currentColor; padding: 5px 15px; font-family: var(--font-mono); font-size: 0.8rem; }
 
         /* --- BIG LOGO SECTION --- */
         .big-logo-section {
-            padding: 60px 0; border-bottom: 1px solid var(--grid-line);
+            padding: 30px 0 60px 0; /* AJUSTE MANUAL: Menos padding arriba para subir el logo */
+            border-bottom: 1px solid var(--grid-line);
             display: flex; justify-content: center; align-items: center; background: #000;
         }
         .big-logo-section a { display: block; width: 100%; text-align: center; }
         .big-logo-section img {
-            max-width: 100%; width: 900px; height: auto; filter: none; transition: 0.3s;
+            max-width: 90%; width: 800px; height: auto; filter: grayscale(100%); transition: 0.3s;
         }
-        .big-logo-section img:hover {
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1)); transform: scale(1.01);
+        .big-logo-section:hover img {
+            filter: grayscale(0%); drop-shadow(0 0 15px var(--accent-color));
         }
 
         /* --- FOOTER --- */
@@ -196,7 +274,7 @@
             max-width: 100%;
             width: 800px;
         }
-        canvas { display: block; background: #050505; cursor: crosshair; width: 100%; height: auto; }
+        canvas.game-cv { display: block; background: #050505; cursor: crosshair; width: 100%; height: auto; }
         
         .ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
@@ -237,7 +315,7 @@
         }
 
         @media(max-width: 768px) {
-            .hero h1 { font-size: 3.5rem; }
+            .hero h1 { font-size: 3.5rem; letter-spacing: -2px; }
             .nav-links { display: none; }
             .controls-panel { bottom: 10px; right: 10px; }
             
@@ -273,25 +351,29 @@
                 padding: 10px; margin: 10px 0; font-size: 0.9rem;
             }
 
-            /* --- FIX CORTE PANTALLA MÓVIL (FULLSCREEN) --- */
+            /* --- FIX CORTE PANTALLA MÓVIL (FULLSCREEN REAL) --- */
             #gameModal {
                 padding: 0 !important;
                 justify-content: center;
+                background: #000 !important;
             }
             
             .game-wrapper { 
-                width: 100vw; 
-                height: 100vh; 
-                max-width: 100%;
-                border: none; 
-                border-radius: 0;
+                width: 100vw !important; 
+                height: 100vh !important; 
+                max-width: none !important;
+                border: none !important; 
+                border-radius: 0 !important;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 background: #000;
+                position: fixed; /* Fija la posición para evitar scroll */
+                top: 0;
+                left: 0;
             }
             
-            canvas {
+            canvas.game-cv {
                 width: 100%;
                 height: 100%;
                 object-fit: cover; 
@@ -307,6 +389,7 @@
                 padding: 5px 10px;
                 border: 1px solid #333;
                 z-index: 10003;
+                border-radius: 20px;
             }
 
             /* Botón Mute Móvil */
@@ -316,6 +399,7 @@
                 right: 20px !important; 
                 background: rgba(0,0,0,0.7);
                 z-index: 10004;
+                border-radius: 20px;
             }
         }
     </style>
@@ -324,6 +408,8 @@
 
     <div id="cursor"></div>
     <div class="noise-overlay"></div>
+    <!-- NEW: Matrix-like rain effect -->
+    <canvas id="bgCanvas"></canvas>
 
     <!-- ROTATE OVERLAY -->
     <div id="rotateOverlay">
@@ -345,98 +431,70 @@
         </div>
     </div>
 
-    <!-- MARQUESINA -->
+    <!-- MARQUESINA ACTUALIZADA -->
     <div class="ticker-wrap">
         <div class="ticker">
-            <span class="ticker__item">LA SEÑAL LLEGA A LATAM</span>
-            <span class="ticker__item">COLOMBIA • MÉXICO • ARGENTINA • CHILE</span>
-            <span class="ticker__item">/// XINA MORA LIVE</span>
-            <span class="ticker__item">INDUSTRIAL TECHNO EXPERIENCE</span>
-            <span class="ticker__item">GET YOUR TICKETS NOW</span>
+            <span class="ticker__item">XINA MORA 2026</span>
+            <span class="ticker__item">GLOBAL TRANSMISSION</span>
+            <span class="ticker__item">/// INDUSTRIAL TECHNO EXPERIENCE</span>
+            <span class="ticker__item">SYSTEM ONLINE V.2.0.2.6</span>
+            <span class="ticker__item">ARE YOU LISTENING?</span>
         </div>
     </div>
 
     <header>
         <div class="logo-container hover-target">
-            <img src="logo.png" alt="XINA MORA LOGO" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-            <h2 style="font-weight:800; letter-spacing:-1px; display:none;">XINA MORA</h2>
+            <!-- LOGO HEADER -->
+            <img src="logo.png" alt="XINA MORA" onerror="this.style.display='none'; this.parentNode.innerText='XINA MORA';">
         </div>
         <ul class="nav-links">
-            <li class="hover-target" onclick="document.querySelector('.events-container').scrollIntoView({behavior: 'smooth'})">TOUR</li>
+            <li class="hover-target" onclick="window.open('https://www.youtube.com/@XinaMora', '_blank')">VISUAL</li>
             <li class="hover-target" onclick="window.open('https://open.spotify.com/intl-es/artist/4dRPdWRUFyJp0yhjGBLClx', '_blank')">MÚSICA</li>
             <li class="hover-target" onclick="openGame()">JUEGO</li>
             <li class="hover-target" onclick="window.open('https://shop.xinamora.com', '_blank')">MERCH</li>
         </ul>
     </header>
 
-    <section class="hero">
-        <h1>
-            <span class="glitch-text">LA SEÑAL</span><br>
-            LLEGA A <span style="color:var(--accent-color)">LATAM</span>
-        </h1>
-        <p style="font-family: var(--font-mono); max-width: 500px; margin-bottom: 30px;">
-            EL TOUR TECHNO MÁS ESPERADO. RECIBE LA SEÑAL.
-        </p>
-        <button class="cta-btn hover-target" onclick="openGame()">
-            [ INICIAR MISIÓN: JUGAR PARA GANAR ]
-        </button>
+    <!-- SECCIÓN 1: PORTADA GIGANTE (Sin efecto scanlines) -->
+    <section class="cover-section">
+        <img src="xinamora_1.png" alt="XINA MORA COVER" class="cover-image" loading="eager" fetchpriority="high" onerror="this.src='https://placehold.co/1920x1080/111/red?text=XINA+MORA+COVER'">
     </section>
 
-    <section class="events-container">
-        <div class="filter-bar">
-            <span class="filter-btn active hover-target" onclick="scrollToEvent('all')">TODAS LAS FECHAS</span>
-            <span class="filter-btn hover-target" onclick="scrollToEvent('col')">COLOMBIA</span>
-            <span class="filter-btn hover-target" onclick="scrollToEvent('mex')">MÉXICO</span>
-            <span class="filter-btn hover-target" onclick="scrollToEvent('arg')">ARGENTINA</span>
-            <span class="filter-btn hover-target" onclick="scrollToEvent('chi')">CHILE</span>
-        </div>
+    <!-- SECCIÓN 2: TEXTO Y FORMULARIO -->
+    <section class="hero">
+        <h1>
+            <span class="glitch-text" data-text="XINA MORA">XINA MORA</span>
+        </h1>
+        <p style="font-family: var(--font-mono); max-width: 500px; margin-bottom: 30px;">
+            LA SEÑAL SE HA EXPANDIDO. NUEVA ERA. NUEVO SONIDO.
+        </p>
+        <button class="cta-btn hover-target" onclick="openGame()">
+            [ INICIAR MISIÓN: 2026 ]
+        </button>
 
-        <div class="event-row hover-target" id="event-col">
-            <div class="date">28.11</div>
-            <div class="details">
-                <h3>BOGOTÁ</h3>
-                <p>GATE CLUB // COLOMBIA</p>
-            </div>
-            <div class="action"><span class="ticket-tag">TICKETS</span></div>
-        </div>
-        <div class="event-row hover-target" id="event-mex">
-            <div class="date">29.11</div>
-            <div class="details">
-                <h3>CDMX</h3>
-                <p>TBA // MÉXICO</p>
-            </div>
-            <div class="action"><span class="ticket-tag">TICKETS</span></div>
-        </div>
-        
-        <div class="event-row hover-target" id="event-arg" onclick="window.open('https://www.passline.com/eventos/xina-mora-en-argentina-5-de-diciembre', '_blank')" style="cursor: pointer;">
-            <div class="date">05.12</div>
-            <div class="details">
-                <h3>BUENOS AIRES</h3>
-                <p>TBA // ARGENTINA</p>
-            </div>
-            <div class="action"><span class="ticket-tag">TICKETS</span></div>
-        </div>
-
-        <div class="event-row hover-target" id="event-chi">
-            <div class="date">07.12</div>
-            <div class="details">
-                <h3>SANTIAGO</h3>
-                <p>TBA // CHILE</p>
-            </div>
-            <div class="action"><span class="ticket-tag">TICKETS</span></div>
+        <!-- FORMULARIO ÚNETE A LA SEÑAL (CENTRAD0 & AJAX) -->
+        <div class="inline-newsletter">
+            <h3>ÚNETE A LA SEÑAL</h3>
+            <form id="inlineNewsletterForm" action="https://formspree.io/f/mnnrbgwb" method="POST" class="inline-form">
+                <input type="text" name="name" class="inline-input hover-target" placeholder="NOMBRE" required>
+                <input type="email" name="_replyto" class="inline-input hover-target" placeholder="CORREO ELECTRÓNICO" required>
+                <button type="submit" id="inlineSubmitBtn" class="cta-btn hover-target" style="width: 100%; margin-top: 10px;">ENVIAR</button>
+            </form>
+            <!-- Mensaje de estado -->
+            <p id="inlineFormStatus" style="font-family: var(--font-mono); margin-top: 15px; min-height: 1.5rem;"></p>
         </div>
     </section>
 
     <div class="big-logo-section hover-target">
         <a href="https://www.xinamora.com" target="_blank" class="hover-target">
-            <img src="logo.png" alt="XINA MORA LARGE LOGO" onerror="this.style.display='none'">
+             <img src="logo.png" alt="XINA MORA LOGO" onerror="this.style.display='none'; this.parentNode.innerHTML='<h2 style=\'font-size:4rem; color:#222\'>XINA MORA</h2>'">
         </a>
     </div>
 
     <footer>
         <div class="footer-text">
-            <span>© 2025 XINA MORA ENTERTAINMENT</span>
-            <span>DISEÑADO PARA EL UNDERGROUND</span>
+            <span>© 2026 XINA MORA ENTERTAINMENT</span>
+            <span>DISEÑADO PARA EL FUTURO</span>
         </div>
         <div class="social-links">
             <a href="https://www.instagram.com/laxinamora/?hl=es" target="_blank" class="hover-target"><i class="fab fa-instagram"></i></a>
@@ -445,22 +503,6 @@
             <a href="https://open.spotify.com/intl-es/artist/4dRPdWRUFyJp0yhjGBLClx" target="_blank" class="hover-target"><i class="fab fa-spotify"></i></a>
         </div>
     </footer>
-
-    <!-- MODALS -->
-    <div id="newsletterModal" class="modal-overlay">
-        <div class="newsletter-box">
-            <div class="close-modal hover-target" onclick="closeNewsletter()" style="top:10px; right:20px; font-size:1.5rem;">✕</div>
-            <h2>RECIBE LA SEÑAL</h2>
-            <p style="margin-top:10px; font-family:var(--font-mono); color:#888;">INFO EXCLUSIVA DEL TOUR.</p>
-            
-            <form id="newsletterForm" action="https://formspree.io/f/mnnrbgwb" method="POST">
-                <input type="email" name="_replyto" class="newsletter-input hover-target" placeholder="EMAIL_ADDRESS" required>
-                <input type="hidden" name="Subject" value="Suscripción XINA MORA Newsletter">
-                <button type="submit" id="newsletterBtn" class="cta-btn hover-target">SUSCRIBIRSE</button>
-            </form>
-            <p id="newsletterStatus" style="font-family: var(--font-mono); font-size: 0.8rem; color: #fff; margin-top: 10px; min-height: 1.2em;"></p>
-        </div>
-    </div>
 
     <!-- MODAL JUEGO -->
     <div id="gameModal" class="modal-overlay">
@@ -471,7 +513,7 @@
                 <i class="fas fa-volume-mute"></i> MUSIC: OFF
             </button>
 
-            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <canvas id="gameCanvas" class="game-cv" width="800" height="500"></canvas>
             
             <div id="scoreHud"></div>
             <div id="livesHud"></div>
@@ -487,7 +529,7 @@
                     
                     <form id="exitForm" action="https://formspree.io/f/mnnrbgwb" method="POST">
                         <input type="email" id="exitEmail" name="_replyto" class="newsletter-input hover-target" placeholder="TU_EMAIL" required>
-                        <input type="hidden" name="Subject" value="Informe de Error XINA MORA - Juego">
+                        <input type="hidden" name="Subject" value="Informe de Error XINA MORA - Juego 2026">
                         <input type="hidden" name="Game_Score" id="hiddenScoreInput">
                         <button type="submit" id="sendExitBtn" class="cta-btn hover-target">ENVIAR LA SEÑAL</button>
                     </form>
@@ -501,7 +543,7 @@
             </div>
         </div>
         <div style="margin-top: 15px; font-family: var(--font-mono); color: #666; font-size: 0.8rem;" id="controlsText">
-            /// SYSTEM READY
+            /// SYSTEM READY 2026
         </div>
     </div>
 
@@ -509,14 +551,41 @@
         // --- CORE FUNCTIONS ---
         const formspreeUrl = 'https://formspree.io/f/mnnrbgwb';
 
-        function scrollToEvent(id) {
-            if(id === 'all') {
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            } else {
-                const el = document.getElementById('event-' + id);
-                if(el) el.scrollIntoView({behavior: 'smooth', block: 'center'});
-            }
+        // --- BACKGROUND FX: CYBER RAIN (OPTIMIZED) ---
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let bgDrops = [];
+        
+        function resizeBg() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+            // Reducción de densidad: columnas más anchas (30px en lugar de 20)
+            const columns = Math.floor(bgCanvas.width / 30);
+            bgDrops = [];
+            for(let i=0; i<columns; i++) bgDrops[i] = 1;
         }
+        window.addEventListener('resize', resizeBg);
+        resizeBg();
+
+        function drawBg() {
+            // Relleno con opacidad para efecto estela, optimizado
+            bgCtx.fillStyle = 'rgba(5, 5, 5, 0.1)'; 
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+            
+            bgCtx.fillStyle = '#220000'; // Dark Red Characters
+            bgCtx.font = '20px "Space Mono"'; // Fuente más grande = menos items que dibujar
+            
+            for(let i=0; i<bgDrops.length; i++) {
+                const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+                bgCtx.fillText(text, i*30, bgDrops[i]*30); // Espaciado de 30px
+                
+                if(bgDrops[i]*30 > bgCanvas.height && Math.random() > 0.975) bgDrops[i] = 0;
+                bgDrops[i]++;
+            }
+            requestAnimationFrame(drawBg);
+        }
+        drawBg();
+
 
         // --- AUDIO ENGINE ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -597,8 +666,40 @@
             finally { btn.disabled = false; btn.innerText = "SUSCRIBIRSE"; }
         }
 
-        setTimeout(() => { document.getElementById('newsletterModal').style.display = 'flex'; }, 15000);
-        function closeNewsletter() { document.getElementById('newsletterModal').style.display = 'none'; }
+        // --- NEW: INLINE FORM HANDLER ---
+        async function handleInlineFormSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = document.getElementById('inlineSubmitBtn');
+            const status = document.getElementById('inlineFormStatus');
+            
+            btn.disabled = true; 
+            btn.innerText = "ENVIANDO SEÑAL...";
+            status.innerHTML = ""; // Limpiar estado previo
+
+            try {
+                const response = await fetch(form.action, { 
+                    method: form.method, 
+                    body: new FormData(form), 
+                    headers: { 'Accept': 'application/json' } 
+                });
+                
+                if (response.ok) {
+                    status.innerHTML = "SEÑAL ENVIADA CON ÉXITO."; 
+                    status.style.color = "var(--secondary-accent)"; // Verde
+                    form.reset();
+                } else { 
+                    status.innerHTML = "ERROR EN LA TRANSMISIÓN."; 
+                    status.style.color = "red"; 
+                }
+            } catch { 
+                status.innerHTML = "ERROR DE CONEXIÓN."; 
+                status.style.color = "red"; 
+            } finally { 
+                btn.disabled = false; 
+                btn.innerText = "ENVIAR"; 
+            }
+        }
 
         // --- CURSOR ---
         const cursor = document.getElementById('cursor');
@@ -610,9 +711,10 @@
 
         window.addEventListener('load', () => {
             const exitForm = document.getElementById('exitForm');
-            const newsletterForm = document.getElementById('newsletterForm');
             if (exitForm) exitForm.addEventListener('submit', handleExitFormSubmit);
-            if (newsletterForm) newsletterForm.addEventListener('submit', handleNewsletterSubmit);
+            
+            const inlineForm = document.getElementById('inlineNewsletterForm');
+            if (inlineForm) inlineForm.addEventListener('submit', handleInlineFormSubmit);
         });
 
         // ==========================================
@@ -636,8 +738,14 @@
         let touchInput = { active: false, y: 250, fire: false };
         let player = { x: 50, y: 250, spd: 5, cd: 0, hp: 3, maxHp: 3 };
 
-        // Desktop Inputs
-        document.addEventListener('keydown', e => { keys[e.code] = true; if(e.code==='Space'||e.code.startsWith('Arrow')) e.preventDefault(); });
+        // Desktop Inputs (FIX: Ignore inputs inside forms)
+        document.addEventListener('keydown', e => { 
+            // Si el usuario está escribiendo en un input, ignorar teclas del juego
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            keys[e.code] = true; 
+            if(e.code==='Space'||e.code.startsWith('Arrow')) e.preventDefault(); 
+        });
         document.addEventListener('keyup', e => delete keys[e.code]);
         
         // --- MOBILE INPUTS & AUDIO UNLOCK ---
@@ -775,7 +883,7 @@
         let particles = [];
         let stars = [];
         let bgTexts = []; // New BG Text System
-        const bgStrings = ["XINA MORA", "111", "222", "333", "444", "555", "RE: NACER"];
+        const bgStrings = ["XINA MORA", "2026", "TECHNO", "SIGNAL", "FUTURE", "ACID", "RE: NACER"];
 
         function initStars() {
             stars = [];
@@ -1031,5 +1139,6 @@
     </script>
 </body>
 </html>
+
 
 
