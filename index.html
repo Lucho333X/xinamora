@@ -212,7 +212,8 @@
         .status-line span b { color: var(--ink); font-weight: 500; }
 
         /* ---------- ¿INICIAR MISIÓN? (diálogo) ---------- */
-        .mission-prompt { padding: clamp(60px, 9vw, 140px) var(--gutter); display: flex; justify-content: center; }
+        .mission-prompt { padding: clamp(60px, 9vw, 140px) var(--gutter); display: flex; justify-content: center; overflow: hidden; transition: height .7s var(--ease), padding .7s var(--ease), opacity .5s; }
+        .mission-prompt.gone { height: 0 !important; padding-top: 0; padding-bottom: 0; opacity: 0; border-top-width: 0; }
         .dialog {
             width: min(640px, 100%); border: 1px solid var(--line-2); border-radius: 18px; padding: clamp(26px, 4vw, 48px);
             background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)); position: relative;
@@ -436,7 +437,6 @@
             <img src="xinamora_1.png" alt="XINA MORA" class="cover-image" loading="eager" fetchpriority="high" onerror="this.src='https://placehold.co/1920x1080/111/f00?text=XINA+MORA'">
             <div class="meta-top">
                 <span class="live">Live — 2026</span>
-                <span>Hard techno</span>
             </div>
             <div class="hero-grid">
                 <h1 class="rv"><span>XINA</span><span class="thin">MORA</span></h1>
@@ -662,16 +662,17 @@
         document.querySelectorAll('.rv').forEach(el => revealObs.observe(el));
 
 
-        // Diálogo "¿Iniciar misión?"
-        function declineMission() {
-            const d = document.getElementById('missionDialog');
-            const s = document.getElementById('promptStatus');
-            d.classList.add('declined');
-            s.textContent = 'Entendido. La misión sigue disponible al final de la página.';
-            const b = document.getElementById('declineBtn');
-            b.querySelector('.t').textContent = 'Cerrar';
-            b.onclick = () => { d.classList.remove('declined'); s.textContent = ''; b.querySelector('.t').textContent = 'No'; b.onclick = declineMission; };
+        // Diálogo "¿Iniciar misión?": desaparece al decir "No" o al terminar una partida
+        let missionDismissed = false;
+        function dismissMission() {
+            const sec = document.getElementById('mision');
+            if(!sec || missionDismissed) return;
+            missionDismissed = true;
+            sec.style.height = sec.offsetHeight + 'px';
+            requestAnimationFrame(() => requestAnimationFrame(() => sec.classList.add('gone')));
+            setTimeout(() => { sec.style.display = 'none'; }, 800);
         }
+        function declineMission() { dismissMission(); }
 
         // ==========================================
         // === TEASER DEL JUEGO (demo automática del shooter)
@@ -912,6 +913,7 @@
             checkGameOrientation();
         }
         function closeGame() {
+            if(G) dismissMission(); // ya ha jugado: el diálogo de la portada se retira
             gameRequested = false;
             modal.style.display = 'none';
             rotateOverlay.style.display = 'none';
